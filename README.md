@@ -1,3 +1,3 @@
-# `hypo.js`
+# `hippo`
 
 > A PropositionH hypermedia consumer

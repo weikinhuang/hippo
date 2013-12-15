@@ -6,6 +6,7 @@
   "eqnull": true,
   "expr": true,
   "immed": true,
+  "indent": 2,
   "latedef": true,
   "newcap": true,
   "strict": true,
@@ -14,7 +15,6 @@
   "unused": true,
   "globals": {
     "require": false,
-    "define": false,
+    "define": false
   }
 }
-
