@@ -15,8 +15,8 @@ define(function() {
       FRAGMENT = PCHAR + "\\/\\?",
       URIREGEX = /^(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
 
-  function trim(str) {
-    return str.replace(/^\s+|\s+$/g, '');
+  function scan(string, regExp, extractionPoint) {
+    return regExp.test(string) ? string.match(regExp)[extractionPoint] : null;
   }
 
   function Uri(components) {
@@ -48,9 +48,11 @@ define(function() {
   };
 
   Uri.prototype.site = function() {
+    var authority = this.authority();
+
     return [
-      (this.protocol ? this.protocol + '://' : ''),
-      this.authority(),
+      (this.protocol ? this.protocol + ':' : ''),
+      (authority ? '//' + this.authority() : ''),
     ].join('');
   };
 
@@ -63,9 +65,11 @@ define(function() {
   };
 
   Uri.prototype.toString = function() {
+    var authority = this.authority();
+
     return [
-      (this.protocol ? this.protocol + '://' : ''),
-      this.authority(),
+      (this.protocol ? this.protocol + ':' : ''),
+      (authority ? '//' + authority : ''),
       this.path,
       (this.query ? '?' + this.query : ''),
       (this.fragment ? '#' + this.fragment : '')
@@ -84,14 +88,14 @@ define(function() {
         user, password, host, port, userInfo;
 
     if (authority) {
-      userInfo = authority.match(/^([^\[\]]*)@/)[1];
+      userInfo = scan(authority, /^([^\[\]]*)@/, 1);
 
       if (userInfo) {
-        user = trim(userInfo).match(/^([^:]*):?/)[1];
-        password = trim(userInfo).match(/:(.*)$/)[1];
+        user = scan(userInfo, /^([^:]*):?/, 1);
+        password = scan(userInfo, /:(.*)$/, 1);
       }
 
-      port = authority.match(/:([^:@\[\]]*?)$/)[1];
+      port = scan(authority, /:([^:@\[\]]*?)$/, 1);
 
       host = authority
       .replace(/^([^\[\]]*)@/, '')
@@ -111,10 +115,14 @@ define(function() {
   };
 
   Uri.encodeComponent = function(string, regExp) {
-    regExp = regExp || /\W/g;
+    regExp = regExp || Uri.CHAR_CLASSES.RESERVED + Uri.CHAR_CLASSES.UNRESERVED;
     string = '' + string;
 
-    return string.replace(regExp, function (m) {
+    if (typeof regExp === 'string') {
+      regExp = new RegExp('[^' + regExp + ']', 'g');
+    }
+
+    return string.replace(regExp, function encode(m) {
       var charCode = m[0].charCodeAt(0),
           encoded = [];
 
@@ -132,7 +140,13 @@ define(function() {
       }
 
       return encoded.map(function(c) {
-        return '%' + c.toString(16).toUpperCase();
+        var encodedString = c.toString(16);
+
+        while(encodedString.length < 2) {
+          encodedString = '0' + encodedString;
+        }
+
+        return '%' + encodedString.toUpperCase();
       }).join('');
     });
   };

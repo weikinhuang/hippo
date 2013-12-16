@@ -115,7 +115,62 @@ define(['chai', 'uri'], function(chai, Uri) {
           expect(fullUri.toString()).to.equal(uri);
         });
       });
+
+      describe('when created with string components', function() {
+        var uri = 'http://example.com',
+            stringUri = new Uri({ protocol: 'http', host: 'example.com' });
+
+        it('has a site value of "http://example.com"', function() {
+          expect(stringUri.site()).to.equal(uri);
+        });
+
+        it('is equivalent to the parsed URI', function() {
+          expect(stringUri).to.deep.equal(Uri.parse(uri));
+        });
+      });
+
+      describe('when given only an authority', function() {
+        var authorityUri = new Uri({
+          user: 'user',
+          host: 'example.com'
+        });
+
+        it('does not infer the protocol', function() {
+          expect(authorityUri.port).to.equal('');
+        });
+
+        it('does not inder the port', function() {
+          expect(authorityUri.port).to.equal('');
+        });
+
+        it('has a protocol relative site value of "//user@example.com"', function() {
+          expect(authorityUri.site()).to.equal('//user@example.com');
+        });
+      });
     });
 
+    describe('#encodeComponent', function() {
+      it('returns the component in percent encoding', function() {
+        expect(Uri.encodeComponent('Hello World')).to.equal('Hello%20World');
+      });
+
+      describe('when encoding a string with an existing encoding', function() {
+        it('returns the correct percent encoded string', function() {
+          expect(Uri.encodeComponent('JK%4c', '0-9A-IKM-Za-z%')).to.equal('%4AK%4c');
+        });
+      });
+
+      describe('when encoding a multibyte string', function() {
+        it('returns the correct percent encoded string', function() {
+          expect(Uri.encodeComponent('günther')).to.equal('g%C3%BCnther');
+        });
+      });
+
+      describe('when encoding a string with ASCII chars 0-15', function() {
+        it('returns the correct percent encoded string', function() {
+          expect(Uri.encodeComponent('one\ntwo')).to.equal('one%0Atwo');
+        });
+      });
+    });
   });
 });
