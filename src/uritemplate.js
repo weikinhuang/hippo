@@ -40,7 +40,10 @@ define(['uri'], function(Uri) {
         ';': UNRESERVED + '*=?' + UNRESERVED + '*?',
         '?': UNRESERVED + '*=' + UNRESERVED + '*?',
         '&': UNRESERVED + '*=' + UNRESERVED + '*?'
-      };
+      },
+
+      // Caching commonly used applied functions
+      concat = Array.prototype.concat;
 
   function escapeRegExp(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -118,7 +121,8 @@ define(['uri'], function(Uri) {
           name = varspecPieces[1],
           modifier = varspecPieces[2],
           isComposite = modifier === '*',
-          value = '' + mapping[name],
+          prefix = /^:\d+/.test(modifier) ? modifier.replace(':', '') : '',
+          value = mapping[name],
           allowReserved, encodeMap, transformedValue;
 
       if (value !== null && typeof value !== 'undefined') {
@@ -135,10 +139,15 @@ define(['uri'], function(Uri) {
 
           if (Array.isArray(value)) {
             transformedValue = value.map(function(val) {
-              Uri.encodeComponent(val, encodeMap);
+              if (prefix) {
+                return Uri.encodeComponent(val.slice(0, prefix), encodeMap);
+              }
+              else {
+                return Uri.encodeComponent(val, encodeMap);
+              }
             });
 
-            if (isComposite) {
+            if (!isComposite) {
               transformedValue = transformedValue.join(',');
             }
           }
@@ -164,7 +173,12 @@ define(['uri'], function(Uri) {
             }
           }
           else {
-            transformedValue = Uri.encodeComponent(value, encodeMap);
+            if (prefix) {
+              transformedValue = Uri.encodeComponent(value.slice(0, prefix), encodeMap);
+            }
+            else {
+              transformedValue = Uri.encodeComponent(value, encodeMap);
+            }
           }
         }
         else {
@@ -240,9 +254,9 @@ define(['uri'], function(Uri) {
         }).join('');
         break;
       default:
-        joinedValues = leader + values.map(function(kvPair) {
+        joinedValues = leader + concat.apply([], values.map(function(kvPair) {
           return kvPair.value;
-        }).join(joiner);
+        })).join(joiner);
     }
 
     return joinedValues;

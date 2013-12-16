@@ -10,7 +10,13 @@ define(['chai', 'uritemplate'], function(chai, UriTemplate) {
       it('"' + template + '" expands to "' + result + '"', function() {
         var uri = new UriTemplate(template);
 
-        expect(uri.expand(variables).toString()).to.equal(result);
+        if (Array.isArray(result)) {
+          expect(result).to.include(uri.expand(variables).toString());
+        }
+        else {
+          expect(uri.expand(variables).toString()).to.equal(result);
+
+        }
       });
     });
   }
@@ -71,6 +77,166 @@ define(['chai', 'uritemplate'], function(chai, UriTemplate) {
             ["{?x,y,empty}", "?x=1024&y=768&empty="],
             ["?fixed=yes{&x}", "?fixed=yes&x=1024"],
             ["{&x,y,empty}", "&x=1024&y=768&empty="]
+          ];
+
+      generateTests(testcases, variables);
+    });
+
+    describe('Level 4 Examples', function() {
+      var variables = {
+            var: "value",
+            hello: "Hello World!",
+            path: "/foo/bar",
+            list: ["red", "green", "blue"],
+            keys: {"semi": ";", "dot": ".", "comma":","}
+          },
+          testcases = [
+            ["{var:3}", "val"],
+            ["{var:30}", "value"],
+            ["{list}", "red,green,blue"],
+            ["{list*}", "red,green,blue"],
+            ["{keys}", [
+              "comma,%2C,dot,.,semi,%3B",
+              "comma,%2C,semi,%3B,dot,.",
+              "dot,.,comma,%2C,semi,%3B",
+              "dot,.,semi,%3B,comma,%2C",
+              "semi,%3B,comma,%2C,dot,.",
+              "semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{keys*}", [
+              "comma=%2C,dot=.,semi=%3B",
+              "comma=%2C,semi=%3B,dot=.",
+              "dot=.,comma=%2C,semi=%3B",
+              "dot=.,semi=%3B,comma=%2C",
+              "semi=%3B,comma=%2C,dot=.",
+              "semi=%3B,dot=.,comma=%2C"
+            ]],
+            ["{+path:6}/here", "/foo/b/here"],
+            ["{+list}", "red,green,blue"],
+            ["{+list*}", "red,green,blue"],
+            ["{+keys}", [
+              "comma,,,dot,.,semi,;",
+              "comma,,,semi,;,dot,.",
+              "dot,.,comma,,,semi,;",
+              "dot,.,semi,;,comma,,",
+              "semi,;,comma,,,dot,.",
+              "semi,;,dot,.,comma,,"
+            ]],
+            ["{+keys*}", [
+              "comma=,,dot=.,semi=;",
+              "comma=,,semi=;,dot=.",
+              "dot=.,comma=,,semi=;",
+              "dot=.,semi=;,comma=,",
+              "semi=;,comma=,,dot=.",
+              "semi=;,dot=.,comma=,"
+            ]],
+            ["{#path:6}/here", "#/foo/b/here"],
+            ["{#list}", "#red,green,blue"],
+            ["{#list*}", "#red,green,blue"],
+            ["{#keys}", [
+              "#comma,,,dot,.,semi,;",
+              "#comma,,,semi,;,dot,.",
+              "#dot,.,comma,,,semi,;",
+              "#dot,.,semi,;,comma,,",
+              "#semi,;,comma,,,dot,.",
+              "#semi,;,dot,.,comma,,"
+            ]],
+            ["{#keys*}", [
+              "#comma=,,dot=.,semi=;",
+              "#comma=,,semi=;,dot=.",
+              "#dot=.,comma=,,semi=;",
+              "#dot=.,semi=;,comma=,",
+              "#semi=;,comma=,,dot=.",
+              "#semi=;,dot=.,comma=,"
+            ]],
+            ["X{.var:3}", "X.val"],
+            ["X{.list}", "X.red,green,blue"],
+            ["X{.list*}", "X.red.green.blue"],
+            ["X{.keys}", [
+              "X.comma,%2C,dot,.,semi,%3B",
+              "X.comma,%2C,semi,%3B,dot,.",
+              "X.dot,.,comma,%2C,semi,%3B",
+              "X.dot,.,semi,%3B,comma,%2C",
+              "X.semi,%3B,comma,%2C,dot,.",
+              "X.semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{/var:1,var}", "/v/value"],
+            ["{/list}", "/red,green,blue"],
+            ["{/list*}", "/red/green/blue"],
+            ["{/list*,path:4}", "/red/green/blue/%2Ffoo"],
+            ["{/keys}", [
+              "/comma,%2C,dot,.,semi,%3B",
+              "/comma,%2C,semi,%3B,dot,.",
+              "/dot,.,comma,%2C,semi,%3B",
+              "/dot,.,semi,%3B,comma,%2C",
+              "/semi,%3B,comma,%2C,dot,.",
+              "/semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{/keys*}", [
+              "/comma=%2C/dot=./semi=%3B",
+              "/comma=%2C/semi=%3B/dot=.",
+              "/dot=./comma=%2C/semi=%3B",
+              "/dot=./semi=%3B/comma=%2C",
+              "/semi=%3B/comma=%2C/dot=.",
+              "/semi=%3B/dot=./comma=%2C"
+            ]],
+            ["{;hello:5}", ";hello=Hello"],
+            ["{;list}", ";list=red,green,blue"],
+            ["{;list*}", ";list=red;list=green;list=blue"],
+            ["{;keys}", [
+              ";keys=comma,%2C,dot,.,semi,%3B",
+              ";keys=comma,%2C,semi,%3B,dot,.",
+              ";keys=dot,.,comma,%2C,semi,%3B",
+              ";keys=dot,.,semi,%3B,comma,%2C",
+              ";keys=semi,%3B,comma,%2C,dot,.",
+              ";keys=semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{;keys*}", [
+              ";comma=%2C;dot=.;semi=%3B",
+              ";comma=%2C;semi=%3B;dot=.",
+              ";dot=.;comma=%2C;semi=%3B",
+              ";dot=.;semi=%3B;comma=%2C",
+              ";semi=%3B;comma=%2C;dot=.",
+              ";semi=%3B;dot=.;comma=%2C"
+            ]],
+            ["{?var:3}", "?var=val"],
+            ["{?list}", "?list=red,green,blue"],
+            ["{?list*}", "?list=red&list=green&list=blue"],
+            ["{?keys}", [
+              "?keys=comma,%2C,dot,.,semi,%3B",
+              "?keys=comma,%2C,semi,%3B,dot,.",
+              "?keys=dot,.,comma,%2C,semi,%3B",
+              "?keys=dot,.,semi,%3B,comma,%2C",
+              "?keys=semi,%3B,comma,%2C,dot,.",
+              "?keys=semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{?keys*}", [
+              "?comma=%2C&dot=.&semi=%3B",
+              "?comma=%2C&semi=%3B&dot=.",
+              "?dot=.&comma=%2C&semi=%3B",
+              "?dot=.&semi=%3B&comma=%2C",
+              "?semi=%3B&comma=%2C&dot=.",
+              "?semi=%3B&dot=.&comma=%2C"
+            ]],
+            ["{&var:3}", "&var=val"],
+            ["{&list}", "&list=red,green,blue"],
+            ["{&list*}", "&list=red&list=green&list=blue"],
+            ["{&keys}", [
+              "&keys=comma,%2C,dot,.,semi,%3B",
+              "&keys=comma,%2C,semi,%3B,dot,.",
+              "&keys=dot,.,comma,%2C,semi,%3B",
+              "&keys=dot,.,semi,%3B,comma,%2C",
+              "&keys=semi,%3B,comma,%2C,dot,.",
+              "&keys=semi,%3B,dot,.,comma,%2C"
+            ]],
+            ["{&keys*}", [
+              "&comma=%2C&dot=.&semi=%3B",
+              "&comma=%2C&semi=%3B&dot=.",
+              "&dot=.&comma=%2C&semi=%3B",
+              "&dot=.&semi=%3B&comma=%2C",
+              "&semi=%3B&comma=%2C&dot=.",
+              "&semi=%3B&dot=.&comma=%2C"
+            ]]
           ];
 
       generateTests(testcases, variables);
