@@ -16,7 +16,14 @@ define(['uri'], function(Uri) {
       EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}"),
       G_EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}", 'g'),
 
-      LEADERS = ['?', '/', '#', '.', ';', '&'],
+      LEADERS = {
+        '?': '?',
+        '/': '/',
+        '#': '#',
+        '.': '.',
+        ';': ';',
+        '&': '&'
+      },
       JOINERS = {
         '?': '&',
         '.': '.',
@@ -114,7 +121,7 @@ define(['uri'], function(Uri) {
           value = '' + mapping[name],
           allowReserved, encodeMap, transformedValue;
 
-      if (value) {
+      if (value !== null && typeof value !== 'undefined') {
         allowReserved = operator === '+' || operator === '#';
 
         if (!processor) {
@@ -230,7 +237,7 @@ define(['uri'], function(Uri) {
                    ';' + kvPair.name + '=' + kvPair.value :
                    ';' + kvPair.name;
           }
-        }).join(joiner);
+        }).join('');
         break;
       default:
         joinedValues = leader + values.map(function(kvPair) {
