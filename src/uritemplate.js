@@ -10,9 +10,7 @@ define(['uri'], function(Uri) {
       VARSPEC = "(?:(" + VARIABLE + ")(\\*|:\\d+)?)",
       OPERATOR = "+#./;?&=,!@|",
 
-      //VARNAME_REGEXP = new RegExp("/^" + VARIABLE + "$"),
       VARSPEC_REGEXP = new RegExp("^" + VARSPEC + "$"),
-      //VARIABLE_LIST_REGEXP = new RegExp("^" + VARSPEC + "(?:," + VARSPEC + ")*$"),
       EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}"),
       G_EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}", 'g'),
 
@@ -102,11 +100,6 @@ define(['uri'], function(Uri) {
     return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, function(match) {
       return self._transform_match(mapping, match, processor);
     }));
-  };
-
-  Template.prototype.extract = function(uri, processor) {
-    var matchData = this._match(uri, processor);
-    return (matchData ? matchData.mapping : {});
   };
 
   Template.prototype._transform_match = function(mapping, match, processor) {
@@ -262,12 +255,6 @@ define(['uri'], function(Uri) {
     return joinedValues;
   };
 
-//  Template.prototype._match = function(uri, processor) {
-//    uri = Uri.parse(uri);
-//
-//    var mapping = {};
-//  };
-
   Template.prototype._parseTemplatePattern = function(pattern, processor) {
     var expansions = [],
         escapedPattern = escapeRegExp(pattern).replace(/\\\{(.*?)\\\}/g, function(match) {
@@ -312,45 +299,5 @@ define(['uri'], function(Uri) {
     };
   };
 
-
-  // -- LEGACY --
-  //function processTemplate(templateMatch) {
-    //var split = templateMatch.match(COMPONENTS_REGEXP);
-
-    //return {
-      //original: split[0],
-      //op: split[1],
-      //key: split[2]
-    //};
-  //}
-
-//  function UriTemplate(template) {
-//    this._template = template;
-//  }
-//
-//  UriTemplate.prototype.expand = function(variables) {
-//    //var self = this,
-//        //parsedTemplate = this._template;
-//
-//    //this._template.match(VARIABLE_REGEXP).forEach(function(match) {
-//      //var processedMatch = processTemplate(match);
-//
-//      //switch(processedMatch.op) {
-//        //case '?':
-//        //case '+':
-//          //break;
-//        //default:
-//          //parsedTemplate = parsedTemplate.replace(processedMatch.original, self.simpleExpansion(variables[processedMatch.key]));
-//      //}
-//    //});
-//
-//    //return parsedTemplate;
-//  };
-//
-//  //UriTemplate.prototype.simpleExpansion = function(value) {
-//    //return escape(value);
-//  //}
-//
-//  return UriTemplate;
   return Template;
 });

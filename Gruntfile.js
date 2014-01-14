@@ -1,4 +1,8 @@
+/* jshint node: true */
+
 module.exports = function(grunt) {
+  'use strict';
+
   grunt.initConfig({
     karma: {
       options: {
@@ -6,6 +10,14 @@ module.exports = function(grunt) {
       },
       dev: {
         reporters: ['doc'],
+      },
+      single: {
+        reporters: ['doc'],
+        singleRun: true
+      },
+      ci: {
+        browsers: ['PhantomJS'],
+        singleRun: true
       }
     }
   });

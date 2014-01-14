@@ -4,7 +4,7 @@
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt karma:ci"
   },
   "keywords": [
     "hypermedia",
@@ -22,7 +22,6 @@
     "karma-html2js-preprocessor": "~0.1.0",
     "karma-firefox-launcher": "~0.1.2",
     "karma-script-launcher": "~0.1.0",
-    "karma-jasmine": "~0.1.4",
     "requirejs": "~2.1.9",
     "karma-requirejs": "~0.2.0",
     "karma-coffee-preprocessor": "~0.1.1",
