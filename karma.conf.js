@@ -3,13 +3,16 @@
 // Generated on Tue Dec 10 2013 23:10:32 GMT-0500 (EST)
 
 module.exports = function(config) {
+  'use strict';
+
   config.set({
     basePath: '',
 
     frameworks: ['mocha', 'requirejs', 'chai'],
 
     files: [
-      {pattern: 'src/**/*.js', included: false},
+      {pattern: 'lib/**/*.js', included: false},
+      {pattern: 'core.js', included: false},
       {pattern: 'test/specs/**/*.js', included: false},
 
       'test/main.js'
