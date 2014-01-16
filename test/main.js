@@ -8,6 +8,6 @@ for (var file in window.__karma__.files) {
 }
 
 require({
-  baseUrl: '/base/src'
+  baseUrl: '/base'
 }, tests, window.__karma__.start);
 
