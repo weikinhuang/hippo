@@ -16,7 +16,8 @@
     "require": false,
     "define": false,
     "describe": false,
-    "it": false
+    "it": false,
+    "chai": false
   }
 }
 

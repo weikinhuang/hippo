@@ -1,10 +1,11 @@
 {
-  "name": "hypo.js",
+  "name": "hippo",
   "version": "0.0.1",
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
   "scripts": {
-    "test": "grunt karma:ci"
+    "test": "grunt karma:ci",
+    "promises": "node ./test/promise-specs.js ./lib/promise.js"
   },
   "keywords": [
     "hypermedia",
@@ -17,19 +18,17 @@
     "grunt": "~0.4.2"
   },
   "devDependencies": {
-    "grunt-karma": "~0.6.2",
-    "karma-chrome-launcher": "~0.1.1",
-    "karma-html2js-preprocessor": "~0.1.0",
-    "karma-firefox-launcher": "~0.1.2",
-    "karma-script-launcher": "~0.1.0",
-    "requirejs": "~2.1.9",
-    "karma-requirejs": "~0.2.0",
-    "karma-coffee-preprocessor": "~0.1.1",
-    "karma-phantomjs-launcher": "~0.1.1",
-    "karma": "~0.10.8",
-    "karma-chai-plugins": "0.1.2",
+    "chai": "^1.9.1",
+    "grunt-karma": "^0.8.3",
+    "karma": "^0.12.17",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.1.4",
     "karma-doc-reporter": "git://github.com/Attamusc/karma-doc-reporter#master",
-    "mocha": "~1.15.1",
-    "karma-mocha": "~0.1.1"
+    "karma-mocha": "^0.1.6",
+    "karma-osx-reporter": "^0.1.0",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-requirejs": "^0.2.2",
+    "mocha": "^1.20.1",
+    "requirejs": "~2.1.10"
   }
 }

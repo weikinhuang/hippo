@@ -1,5 +1,4 @@
-/* global describe, it */
-define(['chai', 'lib/uri'], function(chai, Uri) {
+define(['lib/uri'], function(Uri) {
   'use strict';
 
   var expect = chai.expect;

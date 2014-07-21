@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         configFile: 'karma.conf.js',
       },
       dev: {
-        reporters: ['doc'],
+        reporters: ['progress', 'osx'],
       },
       single: {
         reporters: ['doc'],

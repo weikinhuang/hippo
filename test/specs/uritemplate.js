@@ -1,4 +1,4 @@
-define(['chai', 'lib/uritemplate'], function(chai, UriTemplate) {
+define(['lib/uritemplate'], function(UriTemplate) {
   'use strict';
   var expect = chai.expect;
 
