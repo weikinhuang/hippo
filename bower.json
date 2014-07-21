@@ -19,5 +19,12 @@
     "tests",
     "karma.conf.js",
     "Gruntfile.js"
-  ]
+  ],
+  "moduleType": [
+    "amd"
+  ],
+  "dependencies": {
+    "pretender": "~0.1.0",
+    "reqwest": "~1.1.1"
+  }
 }
