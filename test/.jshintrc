@@ -13,9 +13,12 @@
   "undef": true,
   "unused": true,
   "globals": {
+    "define": false,
+    "require": false,
     "describe": false,
     "it": false,
-    "chai": false
+    "expect": false,
+    "sinon": false
   }
 }
 

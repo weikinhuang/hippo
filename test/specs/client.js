@@ -1,17 +1,23 @@
-import Client from 'lib/client';
+define(['lib/client'], function(Client) {
+  describe.only('Client', function() {
+    it('can be instantiated', function() {
+      expect(new Client("")).to.be.an.instanceOf(Client);
+    });
 
-var expect = chai.expect;
+    describe('#constructor', function() {
+      describe('when not given an api root', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Client();
+          }).to.throw(/Client must be initialized with an API Root/);
+        });
+      });
+    });
 
-describe('Client', function() {
-  it('can be instantiated', function() {
-    expect(new Client()).to.be.an.instanceOf(Client);
-  });
-
-  describe('#walk', function() {
-    it('is a function', function() {
-      var client = new Client();
-
-      expect(client.walk).to.be.a('function');
+    describe('#walk', function() {
+      it('description', function() {
+      });
     });
   });
 });
+
