@@ -3,9 +3,5 @@ define(['lib/graph'], function(Graph) {
     it('is a constructor', function() {
       expect(new Graph()).to.be.instanceOf(Graph);
     });
-
-    describe('#constructor', function() {
-      expect(new Graph())
-    });
   });
 });
