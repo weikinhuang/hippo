@@ -4,6 +4,7 @@
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
   "scripts": {
+    "postinstall": "bower install",
     "start": "gulp",
     "test": "gulp test"
   },
