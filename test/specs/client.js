@@ -13,8 +13,7 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
     server = null;
   });
 
-
-  describe('Client', function() {
+  describe.only('Client', function() {
     it('can be instantiated', function() {
       expect(new Client("")).to.be.an.instanceOf(Client);
     });
@@ -58,7 +57,6 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
       });
 
       describe('when given a shortname', function() {
-        var client = new Client('/v1');
         var links = {
           root: {
             _links: {
@@ -78,10 +76,75 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
         };
 
         it('returns a resolved promise of a resouce', function() {
+          var client = new Client('/v1');
+
           server.respondWith('OPTION', '/v1', responses.root);
           server.respondWith('OPTION', '/v1/foo', responses.foo);
 
           return expect(client.walk('foo')).to.become(new Resource(links.foo));
+        });
+
+        describe('that does not exist', function() {
+          it('returns a promise that rejects', function() {
+            var client = new Client('/v1');
+
+            server.respondWith('OPTION', '/v1', responses.root);
+            server.respondWith('OPTION', '/v1/foo', responses.foo);
+
+            return expect(client.walk('bar')).to.eventually.be.rejectedWith(/Unknown connection/);
+          });
+        });
+
+        describe('that has already been traversed', function() {
+          it('does not make duplicate requests', function() {
+            var client = new Client('/v1');
+            var xhrCalls = sinon.spy();
+
+            server.respondWith('OPTION', '/v1', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.root);
+            });
+            server.respondWith('OPTION', '/v1/foo', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.foo);
+            });
+
+            return client.walk('foo')
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledTwice;
+
+              return client.walk('foo');
+            })
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledTwice;
+            });
+          });
+        });
+
+        describe('that has not already been travered', function() {
+          it('traverses from the root', function() {
+            var client = new Client('/v1');
+            var xhrCalls = sinon.spy();
+
+            server.respondWith('OPTION', '/v1', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.root);
+            });
+            server.respondWith('OPTION', '/v1/foo', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.foo);
+            });
+
+            return client.walk()
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledOnce;
+
+              return client.walk('foo');
+            })
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledTwice;
+            });
+          });
         });
       });
     });
