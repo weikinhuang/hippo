@@ -77,7 +77,20 @@ define(['lib/resource'], function(Resource) {
       describe('when given a shortname that is known', function() {
         it('returns the href for that connection', function() {
           expect(resource.getConnection('self')).to.equal('/');
-          expect(resource.getConnection('foo')).to.equal('/foo{?bar}');
+          expect(resource.getConnection('foo')).to.equal('/foo');
+        });
+      });
+
+      describe('when given a shortname that is an object', function() {
+        it('returns the href for that connection templated out', function() {
+          var connection = {
+            name: 'foo',
+            data: {
+              bar: 5
+            }
+          };
+
+          expect(resource.getConnection(connection)).to.equal('/foo?bar=5');
         });
       });
     });

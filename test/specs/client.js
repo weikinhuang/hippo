@@ -13,7 +13,7 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
     server = null;
   });
 
-  describe.only('Client', function() {
+  describe('Client', function() {
     it('can be instantiated', function() {
       expect(new Client("")).to.be.an.instanceOf(Client);
     });
@@ -61,14 +61,15 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           root: {
             _links: {
               self: { href: '/v1' },
-              foo: { href: '/v1/foo' }
+              foo: { href: '/v1/foo' },
+              templated: { href: '/v1/temp{?var}' }
             }
           },
           foo: {
             _links: {
               self: { href: '/v1/foo' }
             }
-          }
+          },
         };
         var responses = {
           root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
@@ -95,6 +96,31 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           });
         });
 
+        describe('that has not already been traversed', function() {
+          it('traverses from the root', function() {
+            var client = new Client('/v1');
+            var xhrCalls = sinon.spy();
+
+            server.respondWith('OPTION', '/v1', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.root);
+            });
+            server.respondWith('OPTION', '/v1/foo', function(req) {
+              xhrCalls();
+              req.respond.apply(req, responses.foo);
+            });
+
+            return client.walk()
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledOnce;
+              return client.walk('foo');
+            })
+            .then(function() {
+              expect(xhrCalls).to.have.been.calledTwice;
+            });
+          });
+        });
+
         describe('that has already been traversed', function() {
           it('does not make duplicate requests', function() {
             var client = new Client('/v1');
@@ -112,7 +138,6 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             return client.walk('foo')
             .then(function() {
               expect(xhrCalls).to.have.been.calledTwice;
-
               return client.walk('foo');
             })
             .then(function() {
@@ -120,31 +145,78 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             });
           });
         });
+      });
 
-        describe('that has not already been travered', function() {
-          it('traverses from the root', function() {
-            var client = new Client('/v1');
-            var xhrCalls = sinon.spy();
+      describe('when given a shortname object', function() {
+        var links = {
+          root: {
+            _links: {
+              self: { href: '/v1' },
+              templated: { href: '/v1/temp{?var}' }
+            }
+          },
+          templated: {
+            _links: {
+              self: { href: '/v1/temp{?var}' }
+            }
+          }
+        };
+        var responses = {
+          root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
+          templated: [200, { "Content-Type": "application/json" }, JSON.stringify(links.templated)]
+        };
 
-            server.respondWith('OPTION', '/v1', function(req) {
-              xhrCalls();
-              req.respond.apply(req, responses.root);
-            });
-            server.respondWith('OPTION', '/v1/foo', function(req) {
-              xhrCalls();
-              req.respond.apply(req, responses.foo);
-            });
+        it('uses the object to template out the uri', function() {
+          var client = new Client('/v1');
+          var uri;
 
-            return client.walk()
-            .then(function() {
-              expect(xhrCalls).to.have.been.calledOnce;
-
-              return client.walk('foo');
-            })
-            .then(function() {
-              expect(xhrCalls).to.have.been.calledTwice;
-            });
+          server.respondWith('OPTION', '/v1', responses.root);
+          server.respondWith('OPTION', /\/v1\/temp/, function(req) {
+            uri = req.url;
+            req.respond.apply(req, responses.templated);
           });
+
+          return client.walk({ name: 'templated', data: { var: 5 } })
+          .then(function() {
+            expect(uri).to.equal('/v1/temp?var=5');
+          });
+        });
+      });
+
+      describe('when given a combination of shortnames and shortname objects', function() {
+        var links = {
+          root: {
+            _links: {
+              self: { href: '/v1' },
+              foo: { href: '/v1/foo{?user}' }
+            }
+          },
+          foo: {
+            _links: {
+              self: { href: '/v1/foo{?user}' },
+              templated: { href: '/v1/temp{?var}' }
+            }
+          },
+          templated: {
+            _links: {
+              self: { href: '/v1/temp{?var}' }
+            }
+          }
+        };
+        var responses = {
+          root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(links.foo)],
+          templated: [200, { "Content-Type": "application/json" }, JSON.stringify(links.templated)]
+        };
+
+        it('returns a resource for the resulting traversal', function() {
+          var client = new Client('/v1');
+
+          server.respondWith('OPTION', '/v1', responses.root);
+          server.respondWith('OPTION', '/v1/foo', responses.foo);
+          server.respondWith('OPTION', /\/v1\/temp/, responses.templated);
+
+          return expect(client.walk('foo', { name: 'templated', data: { var: 'hello' } })).to.become(new Resource(links.templated));
         });
       });
     });
