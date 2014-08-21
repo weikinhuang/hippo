@@ -1,4 +1,6 @@
-define(['lib/resource'], function(Resource) {
+define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) {
+  chai.use(chaiAsPromised);
+
   describe('Resource', function() {
     it('is a constructor', function() {
       expect(new Resource({ _links: {} })).to.be.an.instanceOf(Resource);
@@ -91,6 +93,51 @@ define(['lib/resource'], function(Resource) {
           };
 
           expect(resource.getConnection(connection)).to.equal('/foo?bar=5');
+        });
+      });
+    });
+
+    describe('resource loader methods', function() {
+      var server;
+
+      beforeEach(function() {
+        server = sinon.fakeServer.create();
+        server.autoRespond = true;
+      });
+
+      afterEach(function() {
+        server.restore();
+        server = null;
+      });
+
+      describe('#get', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?bar}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a GET request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('GET', '/v1/foo', responses.foo);
+          return expect(resource.get()).to.become(result);
+        });
+
+        describe('when given a params object', function() {
+          it('return the result of sending a GET request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('GET', '/v1/foo?bar=10', responses.foo);
+            return expect(resource.get({ bar: 10 })).to.become(result);
+          });
         });
       });
     });
