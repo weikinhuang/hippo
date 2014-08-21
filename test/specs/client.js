@@ -1,19 +1,19 @@
 define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromised, Client, Resource) {
-  var server;
-
   chai.use(chaiAsPromised);
 
-  beforeEach(function() {
-    server = sinon.fakeServer.create();
-    server.autoRespond = true;
-  });
-
-  afterEach(function() {
-    server.restore();
-    server = null;
-  });
-
   describe('Client', function() {
+    var server;
+
+    beforeEach(function() {
+      server = sinon.fakeServer.create();
+      server.autoRespond = true;
+    });
+
+    afterEach(function() {
+      server.restore();
+      server = null;
+    });
+
     it('can be instantiated', function() {
       expect(new Client("")).to.be.an.instanceOf(Client);
     });
