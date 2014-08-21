@@ -140,6 +140,63 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
           });
         });
       });
+
+      describe('#post', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a POST request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('POST', '/v1/foo', responses.foo);
+          return expect(resource.post()).to.become(result);
+        });
+
+        describe('when given a data object', function() {
+          it('returns the result of sending a POST request with data to resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('POST', '/v1/foo', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.post({ bar: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object', function() {
+          it('returns the result of sending a POST request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('POST', '/v1/foo?baz=10', responses.foo);
+            return expect(resource.post({}, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object and data object', function() {
+          it('returns the result of sending a POST request with data to the templated resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('POST', '/v1/foo?baz=10', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.post({ bar: 10 }, { baz: 10 })).to.become(result);
+          });
+        });
+      });
     });
   });
 });
