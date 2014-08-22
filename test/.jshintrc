@@ -2,22 +2,26 @@
   "boss": true,
   "browser": true,
   "curly": true,
+  "esnext": true,
   "eqeqeq": true,
   "eqnull": true,
   "expr": true,
   "immed": true,
   "latedef": true,
   "newcap": true,
-  "strict": true,
   "trailing": true,
   "undef": true,
   "unused": true,
   "globals": {
-    "require": false,
     "define": false,
+    "require": false,
     "describe": false,
     "it": false,
-    "chai": false
+    "chai": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "expect": false,
+    "sinon": false
   }
 }
 

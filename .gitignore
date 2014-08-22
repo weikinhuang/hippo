@@ -1,2 +1,4 @@
 node_modules
 .watsonrc
+bower_components
+dist

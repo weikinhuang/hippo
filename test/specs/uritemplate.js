@@ -1,7 +1,4 @@
 define(['lib/uritemplate'], function(UriTemplate) {
-  'use strict';
-  var expect = chai.expect;
-
   function generateTests(testcases, variables) {
     testcases.forEach(function(testcase) {
       var template = testcase[0],

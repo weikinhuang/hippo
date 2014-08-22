@@ -1,8 +1,4 @@
 define(['lib/uri'], function(Uri) {
-  'use strict';
-
-  var expect = chai.expect;
-
   describe('Uri', function() {
     it('can be instantiated', function() {
       expect(new Uri()).to.be.an.instanceOf(Uri);
