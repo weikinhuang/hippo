@@ -68,6 +68,14 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
       };
       var resource = new Resource(descriptor);
 
+      describe('when given a resource that is falsey', function() {
+        it('throws an error', function() {
+          expect(function() {
+            resource.getConnection('');
+          }).to.throw(/No shortname given for connection/);
+        });
+      });
+
       describe('when given a shortname that is not known', function() {
         it('throws an error', function() {
           expect(function() {

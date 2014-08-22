@@ -76,6 +76,14 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           foo: [200, { "Content-Type": "application/json" }, JSON.stringify(links.foo)]
         };
 
+        describe('that is falsey', function() {
+          it('returns a rejected promise', function() {
+            var client = new Client('/v1');
+            server.respondWith('OPTION', '/v1', responses.root);
+            return expect(client.walk('')).to.eventually.be.rejectedWith(/Client walk: A shortname must be provided/);
+          });
+        });
+
         it('returns a resolved promise of a resouce', function() {
           var client = new Client('/v1');
 
