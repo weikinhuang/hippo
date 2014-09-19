@@ -36,7 +36,7 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           var response = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
 
           it('returns a rejected promise', function() {
-            server.respondWith('OPTION', '/v1/foo', response);
+            server.respondWith('OPTIONS', '/v1/foo', response);
             return expect(client.walk()).to.be.rejectedWith(/API does not conform to expected hypermedia format/);
           });
         });
@@ -50,7 +50,7 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           var response = [200, { "Content-Type": "application/json" }, JSON.stringify(links)];
 
           it('returns a resolved promise ', function() {
-            server.respondWith('OPTION', '/v1/foo', response);
+            server.respondWith('OPTIONS', '/v1/foo', response);
             return expect(client.walk()).to.become(new Resource(links));
           });
         });
@@ -79,7 +79,7 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
         describe('that is falsey', function() {
           it('returns a rejected promise', function() {
             var client = new Client('/v1');
-            server.respondWith('OPTION', '/v1', responses.root);
+            server.respondWith('OPTIONS', '/v1', responses.root);
             return expect(client.walk('')).to.eventually.be.rejectedWith(/Client walk: A shortname must be provided/);
           });
         });
@@ -87,8 +87,8 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
         it('returns a resolved promise of a resouce', function() {
           var client = new Client('/v1');
 
-          server.respondWith('OPTION', '/v1', responses.root);
-          server.respondWith('OPTION', '/v1/foo', responses.foo);
+          server.respondWith('OPTIONS', '/v1', responses.root);
+          server.respondWith('OPTIONS', '/v1/foo', responses.foo);
 
           return expect(client.walk('foo')).to.become(new Resource(links.foo));
         });
@@ -97,8 +97,8 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           it('returns a promise that rejects', function() {
             var client = new Client('/v1');
 
-            server.respondWith('OPTION', '/v1', responses.root);
-            server.respondWith('OPTION', '/v1/foo', responses.foo);
+            server.respondWith('OPTIONS', '/v1', responses.root);
+            server.respondWith('OPTIONS', '/v1/foo', responses.foo);
 
             return expect(client.walk('bar')).to.eventually.be.rejectedWith(/Unknown connection/);
           });
@@ -109,11 +109,11 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             var client = new Client('/v1');
             var xhrCalls = sinon.spy();
 
-            server.respondWith('OPTION', '/v1', function(req) {
+            server.respondWith('OPTIONS', '/v1', function(req) {
               xhrCalls();
               req.respond.apply(req, responses.root);
             });
-            server.respondWith('OPTION', '/v1/foo', function(req) {
+            server.respondWith('OPTIONS', '/v1/foo', function(req) {
               xhrCalls();
               req.respond.apply(req, responses.foo);
             });
@@ -134,11 +134,11 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             var client = new Client('/v1');
             var xhrCalls = sinon.spy();
 
-            server.respondWith('OPTION', '/v1', function(req) {
+            server.respondWith('OPTIONS', '/v1', function(req) {
               xhrCalls();
               req.respond.apply(req, responses.root);
             });
-            server.respondWith('OPTION', '/v1/foo', function(req) {
+            server.respondWith('OPTIONS', '/v1/foo', function(req) {
               xhrCalls();
               req.respond.apply(req, responses.foo);
             });
@@ -178,8 +178,8 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           var client = new Client('/v1');
           var uri;
 
-          server.respondWith('OPTION', '/v1', responses.root);
-          server.respondWith('OPTION', /\/v1\/temp/, function(req) {
+          server.respondWith('OPTIONS', '/v1', responses.root);
+          server.respondWith('OPTIONS', /\/v1\/temp/, function(req) {
             uri = req.url;
             req.respond.apply(req, responses.templated);
           });
@@ -220,9 +220,9 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
         it('returns a resource for the resulting traversal', function() {
           var client = new Client('/v1');
 
-          server.respondWith('OPTION', '/v1', responses.root);
-          server.respondWith('OPTION', '/v1/foo', responses.foo);
-          server.respondWith('OPTION', /\/v1\/temp/, responses.templated);
+          server.respondWith('OPTIONS', '/v1', responses.root);
+          server.respondWith('OPTIONS', '/v1/foo', responses.foo);
+          server.respondWith('OPTIONS', /\/v1\/temp/, responses.templated);
 
           return expect(client.walk('foo', { name: 'templated', data: { var: 'hello' } })).to.become(new Resource(links.templated));
         });

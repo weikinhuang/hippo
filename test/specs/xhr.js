@@ -4,27 +4,83 @@ define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Prom
   describe('xhr', function() {
     var server;
 
-    beforeEach(function() {
-      server = sinon.fakeServer.create();
-      server.respondWith('GET', '/', [200, { 'Content-Type': 'text/plain' }, 'hello world']);
-      server.autoRespond = true;
+    describe('return values', function() {
+      beforeEach(function() {
+        server = sinon.fakeServer.create();
+        server.respondWith('GET', '/', [200, { 'Content-Type': 'text/plain' }, 'hello world']);
+        server.autoRespond = true;
+      });
+
+      afterEach(function() {
+        server.restore();
+        server = null;
+      });
+
+      it('returns a promise', function() {
+        expect(xhr({ url: '/' })).to.be.an.instanceOf(Promise);
+      });
+
+      it('returns a resolved promise on XHR success', function() {
+        return expect(xhr({ url: '/' })).to.become('hello world');
+      });
+
+      it('returns a rejected promise on XHR failure', function() {
+        return expect(xhr({ url: '/foo' })).to.eventually.be.rejected;
+      });
     });
 
-    afterEach(function() {
-      server.restore();
-      server = null;
-    });
+    describe('request paramaters', function() {
+      beforeEach(function() {
+        server = sinon.fakeServer.create();
+        server.autoRespond = true;
+      });
 
-    it('returns a promise', function() {
-      expect(xhr({ url: '/' })).to.be.an.instanceOf(Promise);
-    });
+      afterEach(function() {
+        server.restore();
+        server = null;
+      });
 
-    it('returns a resolved promise on XHR success', function() {
-      return expect(xhr({ url: '/' })).to.become('hello world');
-    });
+      describe('when making a request to the same domain', function() {
+        it('sets cross origin properties', function() {
+          var uri = '/';
 
-    it('returns a rejected promise on XHR failure', function() {
-      return expect(xhr({ url: '/foo' })).to.eventually.be.rejected;
+          server.respondWith(function(request) {
+            expect(request.url).to.equal(uri);
+            expect(request.withCredentials).to.be.false;
+            request.respond(200, { "Content-Type": "text/plain" }, '');
+          });
+
+          return xhr({ url: uri });
+        });
+      });
+
+      describe('when making a request to the same domain but a different port', function() {
+        it('sets cross origin properties', function() {
+          var uri = 'http://localhost:8000';
+
+          server.respondWith(function(request) {
+            expect(request.url).to.equal(uri);
+            expect(request.withCredentials).to.be.true;
+            request.respond(200, { "Content-Type": "text/plain" }, '');
+          });
+
+          return xhr({ url: uri });
+        });
+      });
+
+      describe('when making a request to the same domain', function() {
+        it('sets cross origin properties', function() {
+          var uri = 'http://example.com/';
+
+          server.respondWith(function(request) {
+            expect(request.url).to.equal(uri);
+            expect(request.withCredentials).to.be.true;
+            request.respond(200, { "Content-Type": "text/plain" }, '');
+          });
+
+          return xhr({ url: uri });
+        });
+      });
     });
   });
 });
