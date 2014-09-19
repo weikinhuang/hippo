@@ -26,66 +26,6 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           }).to.throw(/Client must be initialized with an API Root/);
         });
       });
-
-      describe('when given an api root that is on the same domain', function() {
-        var uri = '/v1/api';
-        var client = new Client(uri);
-        var links = {
-          _links: {
-            self: { href: uri }
-          }
-        };
-
-        it('properly makes cross origin requests', function() {
-          server.respondWith(function(request) {
-            expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.false;
-            request.respond(200, { "Content-Type": "application/json" }, JSON.stringify(links));
-          });
-
-          return client.walk();
-        });
-      });
-
-      describe('when given an api root that is the same domain but different ports', function() {
-        var uri = 'http://localhost:8080';
-        var client = new Client(uri);
-        var links = {
-          _links: {
-            self: { href: uri }
-          }
-        };
-
-        it('properly makes cross origin requests', function() {
-          server.respondWith(function(request) {
-            expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.true;
-            request.respond(200, { "Content-Type": "application/json" }, JSON.stringify(links));
-          });
-
-          return client.walk();
-        });
-      });
-
-      describe('when given an api root that is a different domain', function() {
-        var uri = 'http://example.com/v1/api';
-        var client = new Client(uri);
-        var links = {
-          _links: {
-            self: { href: uri }
-          }
-        };
-
-        it('properly makes cross origin requests', function() {
-          server.respondWith(function(request) {
-            expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.true;
-            request.respond(200, { "Content-Type": "application/json" }, JSON.stringify(links));
-          });
-
-          return client.walk();
-        });
-      });
     });
 
     describe('#walk', function() {
