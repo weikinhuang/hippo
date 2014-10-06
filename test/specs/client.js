@@ -153,6 +153,24 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             });
           });
         });
+
+        it('returns a resolved promise', function() {
+          var client = new Client('/v1');
+          var node = new Resource(links.foo);
+
+          server.respondWith('OPTIONS', '/v1', responses.root);
+          server.respondWith('OPTIONS', '/v1/foo', responses.foo);
+
+          return client.walk('foo')
+          .then(function(resource) {
+            expect(resource).to.deep.equal(node);
+
+            return client.walk('foo')
+            .then(function(resource) {
+              expect(resource).to.deep.equal(node);
+            });
+          });
+        });
       });
 
       describe('when given a shortname object', function() {
