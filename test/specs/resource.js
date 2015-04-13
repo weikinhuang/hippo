@@ -149,6 +149,37 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         });
       });
 
+      describe('#delete', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?bar}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a DELETE request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('DELETE', '/v1/foo', responses.foo);
+          return expect(resource.delete()).to.become(result);
+        });
+
+        describe('when given a params object', function() {
+          it('return the result of sending a DELETE request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('DELETE', '/v1/foo?bar=10', responses.foo);
+            return expect(resource.delete({ bar: 10 })).to.become(result);
+          });
+        });
+      });
+
       describe('#post', function() {
         var descriptor = {
           _links: {
@@ -202,6 +233,120 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             });
 
             return expect(resource.post({ bar: 10 }, { baz: 10 })).to.become(result);
+          });
+        });
+      });
+
+      describe('#put', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a PUT request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('PUT', '/v1/foo', responses.foo);
+          return expect(resource.put()).to.become(result);
+        });
+
+        describe('when given a data object', function() {
+          it('returns the result of sending a PUT request with data to resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PUT', '/v1/foo', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.put({ bar: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object', function() {
+          it('returns the result of sending a PUT request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('PUT', '/v1/foo?baz=10', responses.foo);
+            return expect(resource.put({}, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object and data object', function() {
+          it('returns the result of sending a PUT request with data to the templated resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PUT', '/v1/foo?baz=10', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.put({ bar: 10 }, { baz: 10 })).to.become(result);
+          });
+        });
+      });
+
+      describe('#patch', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a PATCH request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('PATCH', '/v1/foo', responses.foo);
+          return expect(resource.patch()).to.become(result);
+        });
+
+        describe('when given a data object', function() {
+          it('returns the result of sending a PATCH request with data to resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PATCH', '/v1/foo', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.patch({ bar: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object', function() {
+          it('returns the result of sending a PATCH request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('PATCH', '/v1/foo?baz=10', responses.foo);
+            return expect(resource.patch({}, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object and data object', function() {
+          it('returns the result of sending a PATCH request with data to the templated resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PATCH', '/v1/foo?baz=10', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.patch({ bar: 10 }, { baz: 10 })).to.become(result);
           });
         });
       });
