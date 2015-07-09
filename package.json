@@ -1,5 +1,5 @@
 {
-  "name": "hippo",
+  "name": "be-hippo",
   "version": "0.2.0",
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
