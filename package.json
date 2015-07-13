@@ -4,7 +4,6 @@
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
   "scripts": {
-    "postinstall": "bower install",
     "start": "gulp",
     "test": "gulp test"
   },
@@ -33,7 +32,9 @@
     "karma-sinon-chai": "^0.2.0",
     "lodash": "^2.4.1",
     "pretender": "^0.1.0",
-    "requirejs": "~2.1.10"
+    "requirejs": "~2.1.10",
+    "es6-promise": "^2.3.0",
+    "reqwest": "^1.1.6"
   },
   "peerDependencies": {
     "es6-promise": "^2.3.0",
