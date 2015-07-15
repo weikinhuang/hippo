@@ -32,6 +32,10 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
       describe('when given an api root', function() {
         var client = new Client('/v1/foo');
 
+        afterEach(function() {
+          client.clearDescriptorCache();
+        });
+
         describe('that does not conform to the hypermedia format', function() {
           var response = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
 
