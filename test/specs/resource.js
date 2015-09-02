@@ -180,6 +180,37 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         });
       });
 
+      describe('#head', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?bar}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a DELETE request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('HEAD', '/v1/foo', responses.foo);
+          return expect(resource.head()).to.become(result);
+        });
+
+        describe('when given a params object', function() {
+          it('return the result of sending a DELETE request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('HEAD', '/v1/foo?bar=10', responses.foo);
+            return expect(resource.head({ bar: 10 })).to.become(result);
+          });
+        });
+      });
+
       describe('#post', function() {
         var descriptor = {
           _links: {
