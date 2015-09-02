@@ -50,12 +50,23 @@ define(['lib/uritemplate'], function(UriTemplate) {
 
     describe('Level 3 Examples', function() {
       var variables = {
-            var: "value",
+            count: ["one", "two", "three"],
+            dom: ["example", "com"],
+            dub: "me/too",
             hello: "Hello World!",
-            empty: "",
+            half: "50%",
+            var: "value",
+            who: "fred",
+            base: "http://example.com/home/",
             path: "/foo/bar",
+            list: ["red", "green", "blue"],
+            keys: { semi: ';', dot: '.', comma: ',' },
+            v: "6",
             x: "1024",
-            y: "768"
+            y: "768",
+            empty: "",
+            empty_keys: [],
+            undef: null
           },
           testcases = [
             ["map?{x,y}", "map?1024,768"],
@@ -66,6 +77,13 @@ define(['lib/uritemplate'], function(UriTemplate) {
             ["{#path,x}/here", "#/foo/bar,1024/here"],
             ["X{.var}", "X.value"],
             ["X{.x,y}", "X.1024.768"],
+            ["X{.empty}", "X."],
+            ["X{.undef}", "X"],
+            ["X{.empty_keys}", "X"],
+            ["X{.empty_keys*}", "X"],
+            ["X{.undef}", "X"],
+            ["{/empty}", "/"],
+            ["{/undef}", ""],
             ["{/var}", "/value"],
             ["{/var,x}/here", "/value/1024/here"],
             ["{;x,y}", ";x=1024;y=768"],
