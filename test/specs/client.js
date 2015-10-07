@@ -57,6 +57,14 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             server.respondWith('OPTIONS', '/v1/foo', response);
             return expect(client.walk()).to.become(new Resource(links));
           });
+
+          it('passes request options to created resources', function() {
+            var options = { requestOptions: { headers: { foo: 'hello' } } };
+            var client = new Client('/v1/foo', options);
+
+            server.respondWith('OPTIONS', '/v1/foo', response);
+            return expect(client.walk()).to.become(new Resource(links, options.requestOptions));
+          });
         });
       });
 
