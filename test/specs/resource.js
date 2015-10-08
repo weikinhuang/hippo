@@ -147,6 +147,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             return expect(resource.get({ bar: 10 })).to.become(result);
           });
         });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.get({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.get({ bar: 10 }, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          });
+        });
       });
 
       describe('#delete', function() {
@@ -178,6 +217,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             return expect(resource.delete({ bar: 10 })).to.become(result);
           });
         });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 }, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 }, { headers: { foo: 'baz' } });
+          });
+        });
       });
 
       describe('#head', function() {
@@ -207,6 +285,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
             server.respondWith('HEAD', '/v1/foo?bar=10', responses.foo);
             return expect(resource.head({ bar: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.head({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.head({ bar: 10 }, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.head({ bar: 10 }, { headers: { foo: 'baz' } });
           });
         });
       });
@@ -266,6 +383,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             return expect(resource.post({ bar: 10 }, { baz: 10 })).to.become(result);
           });
         });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('POST', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.post({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('POST', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.post({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('POST', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.post({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+          });
+        });
       });
 
       describe('#put', function() {
@@ -323,6 +479,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             return expect(resource.put({ bar: 10 }, { baz: 10 })).to.become(result);
           });
         });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('PUT', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.put({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PUT', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.put({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('PUT', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.put({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+          });
+        });
       });
 
       describe('#patch', function() {
@@ -378,6 +573,45 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             });
 
             return expect(resource.patch({ bar: 10 }, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('PATCH', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.patch({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('PATCH', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.patch({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('PATCH', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.patch({ bar: 10 }, {}, { headers: { foo: 'baz' } });
           });
         });
       });
