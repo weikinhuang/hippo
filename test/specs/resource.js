@@ -616,5 +616,52 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         });
       });
     });
+
+    describe('when multiple requests are made with the same root options', function() {
+      var server;
+      var descriptor = {
+        _links: {
+          self: {
+            href: '/v1/foo{?baz}'
+          }
+        }
+      };
+      var otherDescriptor = {
+        _links: {
+          self: {
+            href: '/v1/bar{?baz}'
+          }
+        }
+      };
+
+      beforeEach(function() {
+        server = sinon.fakeServer.create();
+        server.autoRespond = true;
+      });
+
+      afterEach(function() {
+        server.restore();
+        server = null;
+      });
+
+      it('does not modify the root options object', function() {
+        var options = { headers: { foo: 'bar' } };
+        var resource = new Resource(descriptor, options);
+        var resourceB = new Resource(otherDescriptor, options);
+
+        server.respondWith('GET', '/v1/foo', function(req) {
+          expect(req.requestHeaders.foo).to.equal('baz');
+          req.respond(200, { "Content-Type": "text/plain" }, '');
+        });
+
+        server.respondWith('GET', '/v1/bar', function(req) {
+          expect(req.requestHeaders.foo).to.equal('bar');
+          req.respond(200, { "Content-Type": "text/plain" }, '');
+        });
+
+        return resource.get({}, { headers: { foo: 'baz' } })
+        .then(function() { return resourceB.get(); });
+      });
+    });
   });
 });
