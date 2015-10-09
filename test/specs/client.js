@@ -257,6 +257,35 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
           return expect(client.walk('foo', { name: 'templated', data: { var: 'hello' } })).to.become(new Resource(links.templated));
         });
       });
+
+      describe('when a shortname walk 404s', function() {
+        var links = {
+          root: {
+            _links: {
+              self: { href: '/v1' },
+              foo: { href: '/v1/foo{?user}' }
+            }
+          },
+          foo: {
+            _links: {
+              self: { href: '/v1/foo{?user}' }
+            }
+          }
+        };
+        var responses = {
+          root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
+          foo: [404, { "Content-Type": "text/plain" }, ''],
+        };
+
+        it('returns an "Unable to get descriptor" error', function() {
+          var client = new Client('/v1');
+
+          server.respondWith('OPTIONS', '/v1', responses.root);
+          server.respondWith('OPTIONS', '/v1/foo', responses.foo);
+
+          return expect(client.walk('foo')).to.be.rejectedWith(new RegExp('Unable to get descriptor for uri "/v1/foo"'));
+        });
+      });
     });
   });
 });
