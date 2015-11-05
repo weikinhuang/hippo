@@ -1,6 +1,6 @@
 {
   "name": "be-hippo",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A PropositionH hypermedia consumer",
   "main": "index.js",
   "scripts": {
