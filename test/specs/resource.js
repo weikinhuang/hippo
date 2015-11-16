@@ -188,76 +188,6 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         });
       });
 
-      describe('#delete', function() {
-        var descriptor = {
-          _links: {
-            self: {
-              href: '/v1/foo{?bar}'
-            }
-          }
-        };
-        var result = {
-          hello: 'world'
-        };
-
-        var responses = {
-          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
-        };
-
-        it('returns the result of sending a DELETE request to the resource', function() {
-          var resource = new Resource(descriptor);
-          server.respondWith('DELETE', '/v1/foo', responses.foo);
-          return expect(resource.delete()).to.become(result);
-        });
-
-        describe('when given a params object', function() {
-          it('return the result of sending a DELETE request to the templated resource', function() {
-            var resource = new Resource(descriptor);
-            server.respondWith('DELETE', '/v1/foo?bar=10', responses.foo);
-            return expect(resource.delete({ bar: 10 })).to.become(result);
-          });
-        });
-
-        describe('when given resource level options', function() {
-          it('passes those options to the ajax request method', function() {
-            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
-
-            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
-              expect(req.requestHeaders.foo).to.equal('bar');
-              req.respond(200, { "Content-Type": "text/plain" }, '');
-            });
-
-            return resource.delete({ bar: 10 });
-          });
-        });
-
-        describe('when given request level options', function() {
-          it('passes those options to the ajax request method', function() {
-            var resource = new Resource(descriptor);
-
-            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
-              expect(req.requestHeaders.foo).to.equal('bar');
-              req.respond(200, { "Content-Type": "text/plain" }, '');
-            });
-
-            return resource.delete({ bar: 10 }, { headers: { foo: 'bar' } });
-          });
-        });
-
-        describe('when given resource and request level options', function() {
-          it('passes those options to the ajax request method', function() {
-            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
-
-            server.respondWith('DELETE', '/v1/foo?bar=10', function(req) {
-              expect(req.requestHeaders.foo).to.equal('baz');
-              req.respond(200, { "Content-Type": "text/plain" }, '');
-            });
-
-            return resource.delete({ bar: 10 }, { headers: { foo: 'baz' } });
-          });
-        });
-      });
-
       describe('#head', function() {
         var descriptor = {
           _links: {
@@ -612,6 +542,102 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             });
 
             return resource.patch({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+          });
+        });
+      });
+
+      describe('#delete', function() {
+        var descriptor = {
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}'
+            }
+          }
+        };
+        var result = {
+          hello: 'world'
+        };
+
+        var responses = {
+          foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        };
+
+        it('returns the result of sending a DELETE request to the resource', function() {
+          var resource = new Resource(descriptor);
+          server.respondWith('DELETE', '/v1/foo', responses.foo);
+          return expect(resource.delete()).to.become(result);
+        });
+
+        describe('when given a data object', function() {
+          it('returns the result of sending a DELETE request with data to resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('DELETE', '/v1/foo', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.delete({ bar: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object', function() {
+          it('returns the result of sending a DELETE request to the templated resource', function() {
+            var resource = new Resource(descriptor);
+            server.respondWith('DELETE', '/v1/foo?baz=10', responses.foo);
+            return expect(resource.delete({}, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given a params object and data object', function() {
+          it('returns the result of sending a DELETE request with data to the templated resource', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('DELETE', '/v1/foo?baz=10', function(req) {
+              expect(req.requestBody).to.equal('bar=10');
+              req.respond.apply(req, responses.foo);
+            });
+
+            return expect(resource.delete({ bar: 10 }, { baz: 10 })).to.become(result);
+          });
+        });
+
+        describe('when given resource level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('DELETE', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 });
+          });
+        });
+
+        describe('when given request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor);
+
+            server.respondWith('DELETE', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+          });
+        });
+
+        describe('when given resource and request level options', function() {
+          it('passes those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('DELETE', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.delete({ bar: 10 }, {}, { headers: { foo: 'baz' } });
           });
         });
       });
