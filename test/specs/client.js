@@ -58,6 +58,18 @@ define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromis
             return expect(client.walk()).to.become(new Resource(links));
           });
 
+          it('passes walk options to the walk request', function() {
+            var options = { walkOptions: { headers: { foo: 'hello' } } };
+            var client = new Client('/v1/foo', options);
+
+            server.respondWith('OPTIONS', '/v1/foo', function(req) {
+              expect(req.requestHeaders.foo).to.eql('hello');
+              req.respond.apply(req, response);
+            });
+
+            return client.walk();
+          });
+
           it('passes request options to created resources', function() {
             var options = { requestOptions: { headers: { foo: 'hello' } } };
             var client = new Client('/v1/foo', options);
