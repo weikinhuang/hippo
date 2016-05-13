@@ -46,8 +46,9 @@ define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Prom
 
           server.respondWith(function(request) {
             expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.false;
             request.respond(200, { "Content-Type": "text/plain" }, '');
+            expect(request.withCredentials).to.be.undefined;
+            expect(request.crossOrigin).to.be.false;
           });
 
           return xhr({ url: uri });
@@ -60,8 +61,9 @@ define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Prom
 
           server.respondWith(function(request) {
             expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.true;
             request.respond(200, { "Content-Type": "text/plain" }, '');
+            expect(request.withCredentials).to.be.undefined;
+            expect(request.crossOrigin).to.be.true;
           });
 
           return xhr({ url: uri });
@@ -74,11 +76,25 @@ define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Prom
 
           server.respondWith(function(request) {
             expect(request.url).to.equal(uri);
-            expect(request.withCredentials).to.be.true;
             request.respond(200, { "Content-Type": "text/plain" }, '');
+            expect(request.withCredentials).to.be.undefined;
+            expect(request.crossOrigin).to.be.true;
           });
 
           return xhr({ url: uri });
+        });
+
+        it('doesn\'t override withCredentials to be true', function() {
+          var uri = 'http://example.com/';
+
+          server.respondWith(function(request) {
+            expect(request.url).to.equal(uri);
+            request.respond(200, { "Content-Type": "text/plain" }, '');
+            expect(request.withCredentials).to.be.false;
+            expect(request.crossOrigin).to.be.true;
+          });
+
+          return xhr({ url: uri, withCredentials: false });
         });
       });
     });
