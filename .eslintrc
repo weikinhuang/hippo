@@ -1,0 +1,11 @@
+{
+  "extends": "./node_modules/eslint-preset-behance/.eslintrc",
+  "env": {
+    "amd": true
+  },
+  "rules": {
+    "object-shorthand": ["off"],
+    "one-var": ["off"],
+    "quotes": ["off"]
+  }
+}
