@@ -1,13 +1,13 @@
 /* global require */
 // Unbreak PhantomJS's Function.prototype.bind
 var isFunction = function(o) {
-  return typeof o == 'function';
+  return typeof o === 'function';
 };
 
 var bind,
-  slice = [].slice,
-  proto = Function.prototype,
-  featureMap;
+    slice = [].slice,
+    proto = Function.prototype,
+    featureMap;
 
 featureMap = {
   'function-bind': 'bind'
@@ -30,7 +30,7 @@ if (!has('function-bind')) {
           return self.apply(this instanceof nop ? this : (obj || {}), args.concat(slice.call(arguments)));
         };
     nop.prototype = this.prototype || {}; // Firefox cries sometimes if prototype is undefined
-    bound.prototype = new nop();
+    bound.prototype = new nop(); // eslint-disable-line new-cap
     return bound;
   };
   proto.bind = bind;
