@@ -12,7 +12,6 @@ define(['lib/uritemplate'], function(UriTemplate) {
         }
         else {
           expect(uri.expand(variables).toString()).to.equal(result);
-
         }
       });
     });
@@ -103,7 +102,7 @@ define(['lib/uritemplate'], function(UriTemplate) {
             hello: "Hello World!",
             path: "/foo/bar",
             list: ["red", "green", "blue"],
-            keys: {"semi": ";", "dot": ".", "comma":","}
+            keys: { semi: ";", dot: ".", comma: "," }
           },
           testcases = [
             ["{var:3}", "val"],

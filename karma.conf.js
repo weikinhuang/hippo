@@ -1,4 +1,4 @@
-// jshint node:true
+/* eslint-env node */
 // Karma configuration
 // Generated on Tue Dec 10 2013 23:10:32 GMT-0500 (EST)
 

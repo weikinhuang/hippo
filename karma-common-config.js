@@ -1,4 +1,4 @@
-/* jshint node: true */
+/* eslint-env node */
 
 module.exports = {
   basePath: '',
@@ -16,7 +16,7 @@ module.exports = {
   ],
 
   preprocessors: {
-    'lib/**/*.js': ['coverage'],
+    'lib/**/*.js': ['coverage']
   },
 
   reporters: ['progress', 'coverage'],
