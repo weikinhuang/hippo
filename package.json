@@ -31,10 +31,11 @@
     "karma-coverage": "^0.2.5",
     "karma-mocha": "^0.1.6",
     "karma-osx-reporter": "^0.1.0",
-    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-phantomjs-launcher": "^1.0.1",
     "karma-requirejs": "^0.2.2",
     "karma-sinon-chai": "^0.2.0",
     "lodash": "^2.4.1",
+    "phantomjs-prebuilt": "^2.1.7",
     "pretender": "^0.1.0",
     "requirejs": "~2.1.10",
     "whatwg-fetch": "^1.0.0"
