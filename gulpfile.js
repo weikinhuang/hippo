@@ -1,4 +1,4 @@
-/* jshint node: true */
+/* eslint-env node */
 'use strict';
 
 var gulp = require('gulp');
@@ -19,7 +19,7 @@ gulp.task('test', function(done) {
 
 gulp.task('tdd', function(done) {
   var tddAdditions = {
-    reporters: ['progress', 'osx'],
+    reporters: ['progress', 'osx']
   };
 
   karma.start(_.assign({}, commonConfig, tddAdditions), done);
