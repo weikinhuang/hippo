@@ -7,6 +7,7 @@ module.exports = {
 
   files: [
     { pattern: 'node_modules/chai-as-promised/lib/chai-as-promised.js', included: false },
+    { pattern: 'node_modules/whatwg-fetch/fetch.js', included: false },
     { pattern: 'bower_components/**/*.js', included: false },
     { pattern: 'lib/**/*.js', included: false },
     { pattern: 'index.js', included: false },
