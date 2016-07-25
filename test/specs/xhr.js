@@ -1,4 +1,4 @@
-define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Promise, xhr) {
+define(['chai-as-promised', 'lib/xhr'], function(chaiAsPromised, xhr) {
   chai.use(chaiAsPromised);
 
   describe('xhr', function() {
@@ -17,15 +17,15 @@ define(['chai-as-promised', 'promise', 'lib/xhr'], function(chaiAsPromised, Prom
       });
 
       it('returns a promise', function() {
-        expect(xhr('/')).to.be.an.instanceOf(Promise);
+        expect(xhr('/').then).to.be.an('function');
       });
 
       it('returns a resolved promise on XHR success', function() {
-        return expect(xhr('/')).to.become('hello world');
+        return expect(xhr('/').then(function(res) { return res.text(); })).to.become('hello world');
       });
 
-      it('returns a rejected promise on XHR failure', function() {
-        return expect(xhr('/foo')).to.eventually.be.rejected;
+      it('returns a successful promise on XHR complete', function() {
+        return expect(xhr('/foo').then(function(res) { return res.status; })).to.become(404);
       });
     });
 

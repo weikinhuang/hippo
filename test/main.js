@@ -51,7 +51,6 @@ require({
 
   paths: {
     promise: 'bower_components/es6-promise/promise',
-    reqwest: 'bower_components/reqwest/reqwest',
     'whatwg-fetch': 'node_modules/whatwg-fetch/fetch',
     'chai-as-promised': 'node_modules/chai-as-promised/lib/chai-as-promised'
   },

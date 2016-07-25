@@ -6,8 +6,9 @@ module.exports = {
   frameworks: ['mocha', 'requirejs', 'sinon-chai'],
 
   files: [
+    'bower_components/es6-promise/promise',
+    'node_modules/whatwg-fetch/fetch.js',
     { pattern: 'node_modules/chai-as-promised/lib/chai-as-promised.js', included: false },
-    { pattern: 'node_modules/whatwg-fetch/fetch.js', included: false },
     { pattern: 'bower_components/**/*.js', included: false },
     { pattern: 'lib/**/*.js', included: false },
     { pattern: 'index.js', included: false },

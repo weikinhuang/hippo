@@ -6,6 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "eslint . && gulp test",
+    "spec": "gulp test",
     "lint": "eslint ."
   },
   "keywords": [
@@ -36,13 +37,10 @@
     "lodash": "^2.4.1",
     "pretender": "^0.1.0",
     "requirejs": "~2.1.10",
-    "reqwest": "^1.1.6"
+    "whatwg-fetch": "^1.0.0"
   },
   "peerDependencies": {
     "es6-promise": "^2.3.0",
-    "reqwest": "^1.1.6"
-  },
-  "dependencies": {
     "whatwg-fetch": "^1.0.0"
   }
 }
