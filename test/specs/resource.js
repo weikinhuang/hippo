@@ -1,6 +1,10 @@
 define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) {
   chai.use(chaiAsPromised);
 
+  function parseResponse(res) {
+    return res.json();
+  }
+
   describe('Resource', function() {
     it('is a constructor', function() {
       expect(new Resource({ _links: {} })).to.be.an.instanceOf(Resource);
@@ -137,14 +141,14 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a GET request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('GET', '/v1/foo', responses.foo);
-          return expect(resource.get()).to.become(result);
+          return expect(resource.get().then(parseResponse)).to.become(result);
         });
 
         describe('when given a params object', function() {
           it('return the result of sending a GET request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('GET', '/v1/foo?bar=10', responses.foo);
-            return expect(resource.get({ bar: 10 })).to.become(result);
+            return expect(resource.get({ bar: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -207,14 +211,14 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a DELETE request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('HEAD', '/v1/foo', responses.foo);
-          return expect(resource.head()).to.become(result);
+          return expect(resource.head().then(parseResponse)).to.become(result);
         });
 
         describe('when given a params object', function() {
           it('return the result of sending a DELETE request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('HEAD', '/v1/foo?bar=10', responses.foo);
-            return expect(resource.head({ bar: 10 })).to.become(result);
+            return expect(resource.head({ bar: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -277,7 +281,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a POST request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('POST', '/v1/foo', responses.foo);
-          return expect(resource.post()).to.become(result);
+          return expect(resource.post().then(parseResponse)).to.become(result);
         });
 
         describe('when given a data object', function() {
@@ -285,11 +289,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('POST', '/v1/foo', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.post({ bar: 10 })).to.become(result);
+            return expect(resource.post(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
           });
         });
 
@@ -297,7 +301,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
           it('returns the result of sending a POST request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('POST', '/v1/foo?baz=10', responses.foo);
-            return expect(resource.post({}, { baz: 10 })).to.become(result);
+            return expect(resource.post(null, { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -306,11 +310,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('POST', '/v1/foo?baz=10', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.post({ bar: 10 }, { baz: 10 })).to.become(result);
+            return expect(resource.post(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -323,7 +327,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.post({ bar: 10 });
+            return resource.post(JSON.stringify({ bar: 10 }));
           });
         });
 
@@ -336,7 +340,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.post({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+            return resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
           });
         });
 
@@ -349,7 +353,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.post({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+            return resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
           });
         });
       });
@@ -373,7 +377,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a PUT request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('PUT', '/v1/foo', responses.foo);
-          return expect(resource.put()).to.become(result);
+          return expect(resource.put().then(parseResponse)).to.become(result);
         });
 
         describe('when given a data object', function() {
@@ -381,11 +385,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('PUT', '/v1/foo', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.put({ bar: 10 })).to.become(result);
+            return expect(resource.put(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
           });
         });
 
@@ -393,7 +397,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
           it('returns the result of sending a PUT request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('PUT', '/v1/foo?baz=10', responses.foo);
-            return expect(resource.put({}, { baz: 10 })).to.become(result);
+            return expect(resource.put(null, { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -402,11 +406,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('PUT', '/v1/foo?baz=10', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.put({ bar: 10 }, { baz: 10 })).to.become(result);
+            return expect(resource.put(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -419,7 +423,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.put({ bar: 10 });
+            return resource.put(JSON.stringify({ bar: 10 }));
           });
         });
 
@@ -432,7 +436,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.put({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+            return resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
           });
         });
 
@@ -445,7 +449,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.put({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+            return resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
           });
         });
       });
@@ -469,7 +473,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a PATCH request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('PATCH', '/v1/foo', responses.foo);
-          return expect(resource.patch()).to.become(result);
+          return expect(resource.patch().then(parseResponse)).to.become(result);
         });
 
         describe('when given a data object', function() {
@@ -477,11 +481,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('PATCH', '/v1/foo', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.patch({ bar: 10 })).to.become(result);
+            return expect(resource.patch(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
           });
         });
 
@@ -489,7 +493,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
           it('returns the result of sending a PATCH request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('PATCH', '/v1/foo?baz=10', responses.foo);
-            return expect(resource.patch({}, { baz: 10 })).to.become(result);
+            return expect(resource.patch(null, { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -498,11 +502,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('PATCH', '/v1/foo?baz=10', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.patch({ bar: 10 }, { baz: 10 })).to.become(result);
+            return expect(resource.patch(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -515,7 +519,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.patch({ bar: 10 });
+            return resource.patch(JSON.stringify({ bar: 10 }));
           });
         });
 
@@ -528,7 +532,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.patch({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+            return resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
           });
         });
 
@@ -541,7 +545,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.patch({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+            return resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
           });
         });
       });
@@ -565,7 +569,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
         it('returns the result of sending a DELETE request to the resource', function() {
           var resource = new Resource(descriptor);
           server.respondWith('DELETE', '/v1/foo', responses.foo);
-          return expect(resource.delete()).to.become(result);
+          return expect(resource.delete().then(parseResponse)).to.become(result);
         });
 
         describe('when given a data object', function() {
@@ -573,11 +577,11 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             var resource = new Resource(descriptor);
 
             server.respondWith('DELETE', '/v1/foo', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.delete({ bar: 10 })).to.become(result);
+            return expect(resource.delete(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
           });
         });
 
@@ -585,20 +589,20 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
           it('returns the result of sending a DELETE request to the templated resource', function() {
             var resource = new Resource(descriptor);
             server.respondWith('DELETE', '/v1/foo?baz=10', responses.foo);
-            return expect(resource.delete({}, { baz: 10 })).to.become(result);
+            return expect(resource.delete(null, { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
-        describe('when given a params object and data object', function() {
+        describe('when given a params object and JSON data', function() {
           it('returns the result of sending a DELETE request with data to the templated resource', function() {
             var resource = new Resource(descriptor);
 
             server.respondWith('DELETE', '/v1/foo?baz=10', function(req) {
-              expect(req.requestBody).to.equal('bar=10');
+              expect(req.requestBody).to.equal('{"bar":10}');
               req.respond.apply(req, responses.foo);
             });
 
-            return expect(resource.delete({ bar: 10 }, { baz: 10 })).to.become(result);
+            return expect(resource.delete(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
           });
         });
 
@@ -611,7 +615,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.delete({ bar: 10 });
+            return resource.delete(JSON.stringify({ bar: 10 }));
           });
         });
 
@@ -624,7 +628,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.delete({ bar: 10 }, {}, { headers: { foo: 'bar' } });
+            return resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
           });
         });
 
@@ -637,7 +641,7 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
               req.respond(200, { "Content-Type": "text/plain" }, '');
             });
 
-            return resource.delete({ bar: 10 }, {}, { headers: { foo: 'baz' } });
+            return resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
           });
         });
       });

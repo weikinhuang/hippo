@@ -6,6 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "eslint . && gulp test",
+    "spec": "gulp test",
     "lint": "eslint ."
   },
   "keywords": [
@@ -30,16 +31,19 @@
     "karma-coverage": "^0.2.5",
     "karma-mocha": "^0.1.6",
     "karma-osx-reporter": "^0.1.0",
-    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-phantomjs-launcher": "^1.0.1",
     "karma-requirejs": "^0.2.2",
     "karma-sinon-chai": "^0.2.0",
     "lodash": "^2.4.1",
+    "mocha": "^2.5.3",
+    "phantomjs-prebuilt": "^2.1.7",
     "pretender": "^0.1.0",
     "requirejs": "~2.1.10",
-    "reqwest": "^1.1.6"
+    "sinon": "^1.17.5",
+    "whatwg-fetch": "^1.0.0"
   },
   "peerDependencies": {
     "es6-promise": "^2.3.0",
-    "reqwest": "^1.1.6"
+    "whatwg-fetch": "^1.0.0"
   }
 }
