@@ -35,9 +35,11 @@
     "karma-requirejs": "^0.2.2",
     "karma-sinon-chai": "^0.2.0",
     "lodash": "^2.4.1",
+    "mocha": "^2.5.3",
     "phantomjs-prebuilt": "^2.1.7",
     "pretender": "^0.1.0",
     "requirejs": "~2.1.10",
+    "sinon": "^1.17.5",
     "whatwg-fetch": "^1.0.0"
   },
   "peerDependencies": {
