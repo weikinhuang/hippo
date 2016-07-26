@@ -1,9 +1,1 @@
-define([
-  './lib/client'
-], function(Client) {
-  'use strict';
-
-  return {
-    Client: Client
-  };
-});
+export default from './lib/client';

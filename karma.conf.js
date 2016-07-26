@@ -4,8 +4,62 @@
 
 'use strict';
 
-var commonConfig = require('./karma-common-config');
+var webpackConfig = require('./webpack.config.js');
+// delete webpackConfig.entry;
+webpackConfig.devtool = 'eval';
+
 
 module.exports = function(config) {
-  config.set(commonConfig);
+  config.set({
+    basePath: '',
+
+    frameworks: ['mocha', 'chai', 'sinon-chai'],
+
+    files: [
+      'node_modules/babel-polyfill/dist/polyfill.js',
+      require.resolve('whatwg-fetch'),
+      // 'node_modules/chai-as-promised/lib/chai-as-promised.js',
+      'test/specs/**/*.js'
+    ],
+
+    coverageReporter: {
+      reporters: [
+        {
+          type: 'text-summary'
+        },
+        {
+          type: 'html',
+          dir: 'coverage/'
+        }
+      ]
+    },
+
+    preprocessors: {
+      'test/**/*.js': ['webpack']
+    },
+
+    reporters: ['progress' /*, 'coverage'*/],
+
+    mochaReporter: {
+      ignoreSkipped: true
+    },
+
+    webpack: webpackConfig,
+
+    webpackMiddleware: {
+      noInfo: true
+    },
+
+    port: 9876,
+
+    colors: true,
+
+    logLevel: config.LOG_INFO,
+
+    autoWatch: true,
+
+    browsers: ['PhantomJS'],
+
+    singleRun: false
+  });
 };
