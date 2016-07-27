@@ -190,6 +190,31 @@ define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) 
             return resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
           });
         });
+
+        describe('when given resource and request level headers', function() {
+          it('merges those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('bar');
+              expect(req.requestHeaders.other).to.equal('str');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.get({ bar: 10 }, { headers: { other: 'str' } });
+          });
+
+          it('overwrites those options to the ajax request method', function() {
+            var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
+
+            server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+              expect(req.requestHeaders.foo).to.equal('baz');
+              req.respond(200, { "Content-Type": "text/plain" }, '');
+            });
+
+            return resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          });
+        });
       });
 
       describe('#head', function() {
