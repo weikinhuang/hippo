@@ -40,6 +40,19 @@ define(['chai-as-promised', 'lib/xhr'], function(chaiAsPromised, xhr) {
         server = null;
       });
 
+      describe('when specifying request method', function() {
+        it('capitalizes the method', function() {
+          var uri = '/';
+
+          server.respondWith(function(request) {
+            expect(request.method).to.equal('PATCH');
+            request.respond(200, { "Content-Type": "text/plain" }, '');
+          });
+
+          return xhr(uri, { method: 'patch' });
+        });
+      });
+
       describe('when making a request to the same domain', function() {
         it('sets cross origin properties', function() {
           var uri = '/';
