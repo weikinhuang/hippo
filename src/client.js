@@ -7,100 +7,100 @@ import Resource from './resource';
  * - traversals: Map of all traversed pathes; keyed hash => uri
  * - nodes: Map of all known node; keyed uri => Node
  */
-  function toWalkerPath(walkerPath) {
-    return walkerPath.map(function(path) {
-      if (!path) {
-        throw new Error('Client walk: A shortname must be provided');
-      }
-
-      return path.name || path;
-    }).join('#');
-  }
-
-  function extend(obj) {
-    var i, prop, source;
-    for (i = 1; i < arguments.length; ++i) {
-      source = arguments[i];
-      for (prop in source) {
-        obj[prop] = source[prop];
-      }
-    }
-    return obj;
-  }
-
-  function Client(apiRoot, options) {
-    if (typeof apiRoot === 'undefined') {
-      throw new Error('Client must be initialized with an API Root');
+function toWalkerPath(walkerPath) {
+  return walkerPath.map(function(path) {
+    if (!path) {
+      throw new Error('Client walk: A shortname must be provided');
     }
 
-    this._apiRoot = apiRoot;
-    this._options = options || {};
-    this._traversals = {};
-    this._nodes = {};
+    return path.name || path;
+  }).join('#');
+}
+
+function extend(obj) {
+  var i, prop, source;
+  for (i = 1; i < arguments.length; ++i) {
+    source = arguments[i];
+    for (prop in source) {
+      obj[prop] = source[prop];
+    }
+  }
+  return obj;
+}
+
+function Client(apiRoot, options) {
+  if (typeof apiRoot === 'undefined') {
+    throw new Error('Client must be initialized with an API Root');
   }
 
-  Client.prototype.walk = function() {
-    var args = Array.prototype.slice.call(arguments);
+  this._apiRoot = apiRoot;
+  this._options = options || {};
+  this._traversals = {};
+  this._nodes = {};
+}
 
-    return this._getRootDescriptor()
-    .then(this._doWalk.bind(this, args));
-  };
+Client.prototype.walk = function() {
+  var args = Array.prototype.slice.call(arguments);
 
-  Client.prototype.clearDescriptorCache = function() {
-    delete this._descriptorCache;
-  };
+  return this._getRootDescriptor()
+  .then(this._doWalk.bind(this, args));
+};
 
-  Client.prototype._doWalk = function(shortNames, head) {
-    var self = this;
-    var walkerPath = toWalkerPath(shortNames);
-    var traversal = this._traversals[walkerPath];
+Client.prototype.clearDescriptorCache = function() {
+  delete this._descriptorCache;
+};
 
-    if (traversal) {
-      return Promise.resolve(this._nodes[traversal]);
-    }
+Client.prototype._doWalk = function(shortNames, head) {
+  var self = this;
+  var walkerPath = toWalkerPath(shortNames);
+  var traversal = this._traversals[walkerPath];
 
-    return shortNames.reduce(function(chain, shortName) {
-      return chain.then(function(resource) {
-        return self._getDescriptor(resource.getConnection(shortName));
-      });
-    }, Promise.resolve(head))
-    .then(function(resource) {
-      var uri = resource.getConnection('self');
-      self._traversals[walkerPath] = uri;
-      self._nodes[uri] = resource;
+  if (traversal) {
+    return Promise.resolve(this._nodes[traversal]);
+  }
 
-      return resource;
+  return shortNames.reduce(function(chain, shortName) {
+    return chain.then(function(resource) {
+      return self._getDescriptor(resource.getConnection(shortName));
     });
-  };
+  }, Promise.resolve(head))
+  .then(function(resource) {
+    var uri = resource.getConnection('self');
+    self._traversals[walkerPath] = uri;
+    self._nodes[uri] = resource;
 
-  Client.prototype._getRootDescriptor = function() {
-    return this._getDescriptor(this._apiRoot)
-    .catch(function() {
-      throw new Error('API does not conform to expected hypermedia format');
-    });
-  };
+    return resource;
+  });
+};
 
-  Client.prototype._getDescriptor = function(uri) {
-    if ((this._descriptorCache = this._descriptorCache || {})[uri]) {
-      return this._descriptorCache[uri];
-    }
+Client.prototype._getRootDescriptor = function() {
+  return this._getDescriptor(this._apiRoot)
+  .catch(function() {
+    throw new Error('API does not conform to expected hypermedia format');
+  });
+};
 
-    this._descriptorCache[uri] = xhr(uri, extend({}, this._options.walkOptions, { method: 'options' }))
-    .then(function(res) {
-      if (res.status < 200 || res.status >= 300) {
-        throw new Error(res.statusText);
-      }
-      return res.json();
-    })
-    .then(function(descriptor) {
-      return new Resource(descriptor, this._options.requestOptions);
-    }.bind(this))
-    .catch(function() {
-      delete this._descriptorCache[uri];
-      throw new Error('Unable to get descriptor for uri "' + uri + '"');
-    }.bind(this));
-
+Client.prototype._getDescriptor = function(uri) {
+  if ((this._descriptorCache = this._descriptorCache || {})[uri]) {
     return this._descriptorCache[uri];
-  };
+  }
 
-  export default Client;
+  this._descriptorCache[uri] = xhr(uri, extend({}, this._options.walkOptions, { method: 'options' }))
+  .then(function(res) {
+    if (res.status < 200 || res.status >= 300) {
+      throw new Error(res.statusText);
+    }
+    return res.json();
+  })
+  .then(function(descriptor) {
+    return new Resource(descriptor, this._options.requestOptions);
+  }.bind(this))
+  .catch(function() {
+    delete this._descriptorCache[uri];
+    throw new Error('Unable to get descriptor for uri "' + uri + '"');
+  }.bind(this));
+
+  return this._descriptorCache[uri];
+};
+
+export default Client;
