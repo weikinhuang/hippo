@@ -5,7 +5,6 @@
 'use strict';
 
 var webpackConfig = require('./webpack.config.js');
-// delete webpackConfig.entry;
 webpackConfig.devtool = 'eval';
 
 // Only run coverage report during `npm test`

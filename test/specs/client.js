@@ -1,4 +1,3 @@
-
 define(['chai-as-promised', 'src/client', 'src/resource'], function(chaiAsPromised, Client, Resource) {
   chai.use(chaiAsPromised);
 
