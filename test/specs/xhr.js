@@ -1,4 +1,4 @@
-define(['chai-as-promised', 'lib/xhr'], function(chaiAsPromised, xhr) {
+define(['chai-as-promised', 'src/xhr'], function(chaiAsPromised, xhr) {
   chai.use(chaiAsPromised);
 
   describe('xhr', function() {

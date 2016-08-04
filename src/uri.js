@@ -1,4 +1,3 @@
-define(function() {
   var ALPHA = "a-zA-Z",
       DIGIT = "0-9",
       GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@",
@@ -164,5 +163,4 @@ define(function() {
     FRAGMENT: FRAGMENT
   };
 
-  return Uri;
-});
+  export default Uri;

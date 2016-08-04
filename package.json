@@ -2,11 +2,11 @@
   "name": "be-hippo",
   "version": "6.0.1",
   "description": "A PropositionH hypermedia consumer",
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
-    "start": "gulp",
-    "test": "eslint . && gulp test",
-    "spec": "gulp test",
+    "start": "./node_modules/karma/bin/karma start",
+    "test": "eslint . && ./node_modules/karma/bin/karma start --singleRun",
+    "spec": "./node_modules/karma/bin/karma start --singleRun",
     "lint": "eslint ."
   },
   "keywords": [
@@ -27,9 +27,8 @@
     "es6-promise": "^2.3.0",
     "eslint": "^3.1.1",
     "eslint-preset-behance": "^3.0.1",
-    "gulp": "^3.8.6",
-    "gulp-debug": "^1.0.0",
-    "gulp-karma": "0.0.4",
+    "istanbul": "^0.4.4",
+    "istanbul-instrumenter-loader": "^0.2.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.2",
     "karma-chai": "^0.1.0",

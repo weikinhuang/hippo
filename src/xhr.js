@@ -1,4 +1,5 @@
-define(['./uri'], function(Uri) {
+import Uri from './uri';
+
   function isCrossOrigin(origin, remote) {
     remote = Uri.parse(remote);
 
@@ -6,7 +7,7 @@ define(['./uri'], function(Uri) {
            !(origin.host === remote.host && origin.port === remote.port);
   }
 
-  return function xhr(url, options) {
+  export default function xhr(url, options) {
     options = options || {};
 
     if (url && isCrossOrigin(window.location, url)) {
@@ -21,4 +22,3 @@ define(['./uri'], function(Uri) {
 
     return window.fetch(url, options);
   };
-});

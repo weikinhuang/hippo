@@ -1,4 +1,4 @@
-define(['chai-as-promised', 'lib/resource'], function(chaiAsPromised, Resource) {
+define(['chai-as-promised', 'src/resource'], function(chaiAsPromised, Resource) {
   chai.use(chaiAsPromised);
 
   function parseResponse(res) {

@@ -1,1 +1,1 @@
-export default from './lib/client';
+module.exports = { Client: require('./src/client') };

@@ -1,4 +1,6 @@
-define(['./uritemplate', './xhr'], function(UriTemplate, xhr) {
+import UriTemplate from './uritemplate';
+import xhr from './xhr';
+
   function extend(obj) {
     var i, prop, source;
     for (i = 1; i < arguments.length; ++i) {
@@ -88,5 +90,4 @@ define(['./uritemplate', './xhr'], function(UriTemplate, xhr) {
     this._description = descriptor._links;
   };
 
-  return Resource;
-});
+  export default Resource;

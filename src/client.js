@@ -1,10 +1,12 @@
+import xhr from './xhr';
+import Resource from './resource';
+
 /**
  * Graph
  * - head: Head root node
  * - traversals: Map of all traversed pathes; keyed hash => uri
  * - nodes: Map of all known node; keyed uri => Node
  */
-define(['./xhr', './resource'], function(xhr, Resource) {
   function toWalkerPath(walkerPath) {
     return walkerPath.map(function(path) {
       if (!path) {
@@ -101,5 +103,4 @@ define(['./xhr', './resource'], function(xhr, Resource) {
     return this._descriptorCache[uri];
   };
 
-  return Client;
-});
+  export default Client;

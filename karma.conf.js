@@ -8,6 +8,16 @@ var webpackConfig = require('./webpack.config.js');
 // delete webpackConfig.entry;
 webpackConfig.devtool = 'eval';
 
+// Only run coverage report during `npm test`
+if (process.env.npm_lifecycle_event === 'test') {
+  webpackConfig.module.postLoaders = webpackConfig.module.postLoaders || [];
+  webpackConfig.module.postLoaders.push({
+    test: /\.js$/,
+    exclude: /(test|node_modules)\//,
+    loader: 'istanbul-instrumenter'
+  });
+}
+
 
 module.exports = function(config) {
   config.set({
@@ -19,7 +29,7 @@ module.exports = function(config) {
       'node_modules/babel-polyfill/dist/polyfill.js',
       require.resolve('whatwg-fetch'),
       // 'node_modules/chai-as-promised/lib/chai-as-promised.js',
-      'test/specs/**/*.js'
+      'test/index.js'
     ],
 
     coverageReporter: {
@@ -35,10 +45,10 @@ module.exports = function(config) {
     },
 
     preprocessors: {
-      'test/**/*.js': ['webpack']
+      'test/index.js': ['webpack']
     },
 
-    reporters: ['progress' /*, 'coverage'*/],
+    reporters: ['progress', 'coverage'],
 
     mochaReporter: {
       ignoreSkipped: true

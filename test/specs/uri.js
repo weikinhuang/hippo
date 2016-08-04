@@ -1,4 +1,4 @@
-define(['lib/uri'], function(Uri) {
+define(['src/uri'], function(Uri) {
   describe('Uri', function() {
     it('can be instantiated', function() {
       expect(new Uri()).to.be.an.instanceOf(Uri);

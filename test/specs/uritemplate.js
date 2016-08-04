@@ -1,4 +1,4 @@
-define(['lib/uritemplate'], function(UriTemplate) {
+define(['src/uritemplate'], function(UriTemplate) {
   function generateTests(testcases, variables) {
     testcases.forEach(function(testcase) {
       var template = testcase[0],

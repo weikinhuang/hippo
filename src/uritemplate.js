@@ -1,4 +1,5 @@
-define(['./uri'], function(Uri) {
+import Uri from './uri';
+
   var VARIABLE_CHAR_CLASS = Uri.CHAR_CLASSES.ALPHA + Uri.CHAR_CLASSES.DIGIT + '_',
       ALL = Uri.CHAR_CLASSES.RESERVED + Uri.CHAR_CLASSES.UNRESERVED,
       VAR_CHAR = "(?:(?:[" + VARIABLE_CHAR_CLASS + "]|%[a-fA-F0-9][a-fA-F0-9])+)",
@@ -297,5 +298,4 @@ define(['./uri'], function(Uri) {
     };
   };
 
-  return Template;
-});
+  export default Template;
