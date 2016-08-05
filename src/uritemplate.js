@@ -1,46 +1,46 @@
 import Uri from './uri';
 
-var VARIABLE_CHAR_CLASS = Uri.CHAR_CLASSES.ALPHA + Uri.CHAR_CLASSES.DIGIT + '_',
-    ALL = Uri.CHAR_CLASSES.RESERVED + Uri.CHAR_CLASSES.UNRESERVED,
-    VAR_CHAR = "(?:(?:[" + VARIABLE_CHAR_CLASS + "]|%[a-fA-F0-9][a-fA-F0-9])+)",
-    RESERVED = "(?:[" + ALL + "]|%[a-fA-F0-9][a-fA-F0-9])",
-    UNRESERVED = "(?:[#{" + UNRESERVED + "}]|%[a-fA-F0-9][a-fA-F0-9])", // eslint-disable-line no-use-before-define
-    VARIABLE = "(?:" + VAR_CHAR + "(?:\\.?" + VAR_CHAR + ")*)",
-    VARSPEC = "(?:(" + VARIABLE + ")(\\*|:\\d+)?)",
-    OPERATOR = "+#./;?&=,!@|",
+const VARIABLE_CHAR_CLASS = Uri.CHAR_CLASSES.ALPHA + Uri.CHAR_CLASSES.DIGIT + '_';
+const ALL = Uri.CHAR_CLASSES.RESERVED + Uri.CHAR_CLASSES.UNRESERVED;
+const VAR_CHAR = '(?:(?:[' + VARIABLE_CHAR_CLASS + ']|%[a-fA-F0-9][a-fA-F0-9])+)';
+const RESERVED = '(?:[' + ALL + ']|%[a-fA-F0-9][a-fA-F0-9])';
+const UNRESERVED = '(?:[#{' + UNRESERVED + '}]|%[a-fA-F0-9][a-fA-F0-9])'; // eslint-disable-line no-use-before-define
+const VARIABLE = "(?:" + VAR_CHAR + "(?:\\.?" + VAR_CHAR + ")*)"; // eslint-disable-line quotes
+const VARSPEC = "(?:(" + VARIABLE + ")(\\*|:\\d+)?)"; // eslint-disable-line quotes
+const OPERATOR = '+#./;?&=,!@|';
 
-    VARSPEC_REGEXP = new RegExp("^" + VARSPEC + "$"),
-    EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}"),
-    G_EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}", 'g'),
+const VARSPEC_REGEXP = new RegExp('^' + VARSPEC + '$');
+const EXPRESSION_REGEXP = new RegExp('{([' + OPERATOR + '])?(' + VARSPEC + '(?:,' + VARSPEC + ')*)}');
+const G_EXPRESSION_REGEXP = new RegExp('{([' + OPERATOR + '])?(' + VARSPEC + '(?:,' + VARSPEC + ')*)}', 'g');
 
-    LEADERS = {
-      '?': '?',
-      '/': '/',
-      '#': '#',
-      '.': '.',
-      ';': ';',
-      '&': '&'
-    },
-    JOINERS = {
-      '?': '&',
-      '.': '.',
-      ';': ';',
-      '&': '&',
-      '/': '/'
-    },
+const LEADERS = {
+  '?': '?',
+  '/': '/',
+  '#': '#',
+  '.': '.',
+  ';': ';',
+  '&': '&'
+};
+const JOINERS = {
+  '?': '&',
+  '.': '.',
+  ';': ';',
+  '&': '&',
+  '/': '/'
+};
 
-    DEFAULT_PROCESSOR = {
-      '+': RESERVED + '*?',
-      '#': RESERVED + '*?',
-      '/': UNRESERVED + '*?',
-      '.': UNRESERVED.replace(/\./g, '') + '*?',
-      ';': UNRESERVED + '*=?' + UNRESERVED + '*?',
-      '?': UNRESERVED + '*=' + UNRESERVED + '*?',
-      '&': UNRESERVED + '*=' + UNRESERVED + '*?'
-    },
+const DEFAULT_PROCESSOR = {
+  '+': RESERVED + '*?',
+  '#': RESERVED + '*?',
+  '/': UNRESERVED + '*?',
+  '.': UNRESERVED.replace(/\./g, '') + '*?',
+  ';': UNRESERVED + '*=?' + UNRESERVED + '*?',
+  '?': UNRESERVED + '*=' + UNRESERVED + '*?',
+  '&': UNRESERVED + '*=' + UNRESERVED + '*?'
+};
 
     // Caching commonly used applied functions
-    concat = Array.prototype.concat;
+const concat = Array.prototype.concat;
 
 function escapeRegExp(s) {
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -52,7 +52,7 @@ export class MatchData {
     this.uri = uri;
     this.template = template;
     this.mapping = mapping;
-    this.preMatch = "";
+    this.preMatch = '';
   }
 
   variables() {
@@ -66,9 +66,7 @@ export class MatchData {
     }, []);
   }
 
-  valuesAt() {
-    var indices = Array.prototype.slice(arguments);
-
+  valuesAt(...indices) {
     return indices.map(function(index) {
       this.get(index);
     }, this);
@@ -97,31 +95,25 @@ export default class Template {
   }
 
   expand(mapping, processor) {
-    var self = this;
-
-    return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, function(match) {
-      return self._transformMatch(mapping, match, processor);
+    return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, (match) => {
+      return this._transformMatch(mapping, match, processor);
     }));
   };
 
   _transformMatch(mapping, match, processor) {
-    var expressionPieces = match.match(EXPRESSION_REGEXP),
-        operator = expressionPieces[1],
-        varlist = expressionPieces[2],
-        transformedMatch;
+    const [, operator, varList] = match.match(EXPRESSION_REGEXP);
 
-    transformedMatch = varlist.split(',')
+    const transformedMatch = varList.split(',')
     .reduce(function(acc, varspec) {
-      var varspecPieces = varspec.match(VARSPEC),
-          name = varspecPieces[1],
-          modifier = varspecPieces[2],
-          isComposite = modifier === '*',
-          prefix = /^:\d+/.test(modifier) ? modifier.replace(':', '') : '',
-          value = mapping[name],
-          allowReserved, encodeMap, transformedValue;
+      const [, name, modifier] = varspec.match(VARSPEC);
+      const isComposite = modifier === '*';
+      const prefix = /^:\d+/.test(modifier) ? modifier.replace(':', '') : '';
+      const value = mapping[name];
+      let encodeMap;
+      let transformedValue;
 
       if (value !== null && typeof value !== 'undefined' && !(Array.isArray(value) && value.length === 0)) {
-        allowReserved = operator === '+' || operator === '#';
+        let allowReserved = operator === '+' || operator === '#';
 
         if (!processor) {
           if (allowReserved) {
@@ -149,11 +141,11 @@ export default class Template {
           else if (value instanceof Object) {
             transformedValue = Object.keys(value)
             .map(function(key) {
-              var val = value[key],
-                  kvPair = [
-                    Uri.encodeComponent(key, encodeMap),
-                    Uri.encodeComponent(val, encodeMap)
-                  ];
+              const val = value[key];
+              const kvPair = [
+                Uri.encodeComponent(key, encodeMap),
+                Uri.encodeComponent(val, encodeMap)
+              ];
 
               if (isComposite) {
                 return kvPair.join('=');
@@ -188,7 +180,7 @@ export default class Template {
         }
 
         acc.push({
-          name: name,
+          name,
           value: transformedValue
         });
       }
@@ -204,9 +196,9 @@ export default class Template {
   };
 
   _joinValues(operator, values) {
-    var leader = LEADERS[operator] || '',
-        joiner = JOINERS[operator] || ',',
-        joinedValues;
+    const leader = LEADERS[operator] || '';
+    const joiner = JOINERS[operator] || ',';
+    let joinedValues;
 
     switch (operator) {
       case '&':
@@ -256,34 +248,27 @@ export default class Template {
   };
 
   _parseTemplatePattern(pattern, processor) {
-    var expansions = [],
-        escapedPattern = escapeRegExp(pattern).replace(/\\\{(.*?)\\\}/g, function(match) {
-          return match.replace(/\\(.)/g, '\\1');
-        }),
-        regexpString;
+    const expansions = [];
+    const escapedPattern = escapeRegExp(pattern).replace(/\\\{(.*?)\\\}/g, function(match) {
+      return match.replace(/\\(.)/g, '\\1');
+    });
 
-    regexpString = escapedPattern.replace(G_EXPRESSION_REGEXP, function(expansion) {
-      var expansionPieces = expansion.match(EXPRESSION_REGEXP),
-          operator = expansionPieces[1],
-          varlist = expansionPieces[2],
-          leader = escapeRegExp(LEADERS[operator] || ''),
-          joiner = escapeRegExp(JOINERS[operator] || ','),
-          combined;
+    const regexpString = escapedPattern.replace(G_EXPRESSION_REGEXP, function(expansion) {
+      const [, operator, varList] = expansion.match(EXPRESSION_REGEXP);
+      const leader = escapeRegExp(LEADERS[operator] || '');
+      const joiner = escapeRegExp(JOINERS[operator] || ',');
 
       expansions.push(expansion);
 
-      combined = varlist.split(',')
+      const combined = varList.split(',')
       .map(function valueCombinator(varspec) {
-        var varspecPieces = varspec.match(VARSPEC_REGEXP),
-            name = varspecPieces[1],
-            modifier = varspecPieces[2],
-            group;
+        const [, name, modifier] = varspec.match(VARSPEC_REGEXP);
 
         if (processor && processor.match) {
           return '(' + processor.match(name) + ')';
         }
 
-        group = DEFAULT_PROCESSOR[operator] || UNRESERVED + '*?';
+        const group = DEFAULT_PROCESSOR[operator] || UNRESERVED + '*?';
         return modifier === '*' ? '(' + group + '(?:' + joiner + '?' + group + ')*)?' : '(' + group + ')?';
       })
       .join(joiner + '?');
@@ -291,11 +276,9 @@ export default class Template {
       return '(?:|' + leader + combined + ')';
     });
 
-    regexpString = '^' + regexpString + '$';
-
     return {
-      expansions: expansions,
-      matcher: new RegExp(regexpString)
+      expansions,
+      matcher: new RegExp('^' + regexpString + '$')
     };
   };
 }

@@ -130,7 +130,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a GET request to the resource', function(done) {
@@ -163,7 +163,7 @@ describe('Resource', function() {
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -177,7 +177,7 @@ describe('Resource', function() {
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -191,7 +191,7 @@ describe('Resource', function() {
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -206,7 +206,7 @@ describe('Resource', function() {
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
             expect(req.requestHeaders.other).toEqual('str');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -218,7 +218,7 @@ describe('Resource', function() {
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -240,7 +240,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a DELETE request to the resource', function(done) {
@@ -273,7 +273,7 @@ describe('Resource', function() {
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -287,7 +287,7 @@ describe('Resource', function() {
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -301,7 +301,7 @@ describe('Resource', function() {
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -323,7 +323,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a POST request to the resource', function(done) {
@@ -393,7 +393,7 @@ describe('Resource', function() {
 
           server.respondWith('POST', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -407,7 +407,7 @@ describe('Resource', function() {
 
           server.respondWith('POST', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -421,7 +421,7 @@ describe('Resource', function() {
 
           server.respondWith('POST', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -443,7 +443,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a PUT request to the resource', function(done) {
@@ -514,7 +514,7 @@ describe('Resource', function() {
 
           server.respondWith('PUT', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -528,7 +528,7 @@ describe('Resource', function() {
 
           server.respondWith('PUT', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -542,7 +542,7 @@ describe('Resource', function() {
 
           server.respondWith('PUT', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -564,7 +564,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a PATCH request to the resource', function(done) {
@@ -635,7 +635,7 @@ describe('Resource', function() {
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -649,7 +649,7 @@ describe('Resource', function() {
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -663,7 +663,7 @@ describe('Resource', function() {
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -685,7 +685,7 @@ describe('Resource', function() {
       };
 
       var responses = {
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(result)],
       };
 
       it('returns the result of sending a DELETE request to the resource', function(done) {
@@ -756,7 +756,7 @@ describe('Resource', function() {
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -770,7 +770,7 @@ describe('Resource', function() {
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -784,7 +784,7 @@ describe('Resource', function() {
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
-            req.respond(200, { "Content-Type": "text/plain" }, '');
+            req.respond(200, { 'Content-Type': 'text/plain' }, '');
             done();
           });
 
@@ -828,12 +828,12 @@ describe('Resource', function() {
 
       server.respondWith('GET', '/v1/foo', function(req) {
         expect(req.requestHeaders.foo).toEqual('baz');
-        req.respond(200, { "Content-Type": "text/plain" }, '');
+        req.respond(200, { 'Content-Type': 'text/plain' }, '');
       });
 
       server.respondWith('GET', '/v1/bar', function(req) {
         expect(req.requestHeaders.foo).toEqual('bar');
-        req.respond(200, { "Content-Type": "text/plain" }, '');
+        req.respond(200, { 'Content-Type': 'text/plain' }, '');
       });
 
       resource.get({}, { headers: { foo: 'baz' } })

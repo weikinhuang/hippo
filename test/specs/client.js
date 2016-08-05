@@ -15,7 +15,7 @@ describe('Client', function() {
   });
 
   it('can be instantiated', function() {
-    expect(new Client("") instanceof Client).toBeTruthy();
+    expect(new Client('') instanceof Client).toBeTruthy();
   });
 
   describe('#constructor', function() {
@@ -37,7 +37,7 @@ describe('Client', function() {
       });
 
       describe('that does not conform to the hypermedia format', function() {
-        var response = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
+        var response = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
         it('returns a rejected promise', function(done) {
           server.respondWith('OPTIONS', '/v1/foo', response);
@@ -55,7 +55,7 @@ describe('Client', function() {
             self: { href: '/v1/foo' }
           }
         };
-        var response = [200, { "Content-Type": "application/json" }, JSON.stringify(links)];
+        var response = [200, { 'Content-Type': 'application/json' }, JSON.stringify(links)];
 
         it('returns a resolved promise ', function(done) {
           server.respondWith('OPTIONS', '/v1/foo', response);
@@ -109,8 +109,8 @@ describe('Client', function() {
         },
       };
       var responses = {
-        root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(links.foo)]
+        root: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.root)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.foo)]
       };
 
       describe('that is falsey', function() {
@@ -241,8 +241,8 @@ describe('Client', function() {
         }
       };
       var responses = {
-        root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
-        templated: [200, { "Content-Type": "application/json" }, JSON.stringify(links.templated)]
+        root: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.root)],
+        templated: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.templated)]
       };
 
       it('uses the object to template out the uri', function(done) {
@@ -284,9 +284,9 @@ describe('Client', function() {
         }
       };
       var responses = {
-        root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
-        foo: [200, { "Content-Type": "application/json" }, JSON.stringify(links.foo)],
-        templated: [200, { "Content-Type": "application/json" }, JSON.stringify(links.templated)]
+        root: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.root)],
+        foo: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.foo)],
+        templated: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.templated)]
       };
 
       it('returns a resource for the resulting traversal', function(done) {
@@ -319,8 +319,8 @@ describe('Client', function() {
         }
       };
       var responses = {
-        root: [200, { "Content-Type": "application/json" }, JSON.stringify(links.root)],
-        foo: [404, { "Content-Type": "text/plain" }, ''],
+        root: [200, { 'Content-Type': 'application/json' }, JSON.stringify(links.root)],
+        foo: [404, { 'Content-Type': 'text/plain' }, ''],
       };
 
       it('returns an "Unable to get descriptor" error', function(done) {
