@@ -1,4 +1,6 @@
-define(['chai-as-promised', 'src/resource'], function(chaiAsPromised, Resource) {
+import chaiAsPromised from 'chai-as-promised';
+import Resource from 'src/resource';
+
   chai.use(chaiAsPromised);
 
   function parseResponse(res) {
@@ -719,4 +721,3 @@ define(['chai-as-promised', 'src/resource'], function(chaiAsPromised, Resource) 
       });
     });
   });
-});

@@ -27,7 +27,6 @@ module.exports = function(config) {
     files: [
       'node_modules/babel-polyfill/dist/polyfill.js',
       require.resolve('whatwg-fetch'),
-      // 'node_modules/chai-as-promised/lib/chai-as-promised.js',
       'test/index.js'
     ],
 

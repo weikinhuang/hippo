@@ -1,4 +1,7 @@
-define(['chai-as-promised', 'src/client', 'src/resource'], function(chaiAsPromised, Client, Resource) {
+import chaiAsPromised from 'chai-as-promised';
+import Client from 'src/client';
+import Resource from 'src/resource';
+
   chai.use(chaiAsPromised);
 
   describe('Client', function() {
@@ -300,4 +303,3 @@ define(['chai-as-promised', 'src/client', 'src/resource'], function(chaiAsPromis
       });
     });
   });
-});

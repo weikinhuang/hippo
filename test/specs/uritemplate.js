@@ -1,4 +1,5 @@
-define(['src/uritemplate'], function(UriTemplate) {
+import UriTemplate from 'src/uritemplate';
+
   function generateTests(testcases, variables) {
     testcases.forEach(function(testcase) {
       var template = testcase[0],
@@ -256,4 +257,3 @@ define(['src/uritemplate'], function(UriTemplate) {
       generateTests(testcases, variables);
     });
   });
-});

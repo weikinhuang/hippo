@@ -1,4 +1,6 @@
-define(['chai-as-promised', 'src/xhr'], function(chaiAsPromised, xhr) {
+import chaiAsPromised from 'chai-as-promised';
+import xhr from 'src/xhr';
+
   chai.use(chaiAsPromised);
 
   describe('xhr', function() {
@@ -112,4 +114,3 @@ define(['chai-as-promised', 'src/xhr'], function(chaiAsPromised, xhr) {
       });
     });
   });
-});
