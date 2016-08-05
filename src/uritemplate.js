@@ -100,11 +100,11 @@ export default class Template {
     var self = this;
 
     return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, function(match) {
-      return self._transform_match(mapping, match, processor);
+      return self._transformMatch(mapping, match, processor);
     }));
   };
 
-  _transform_match(mapping, match, processor) {
+  _transformMatch(mapping, match, processor) {
     var expressionPieces = match.match(EXPRESSION_REGEXP),
         operator = expressionPieces[1],
         varlist = expressionPieces[2],
