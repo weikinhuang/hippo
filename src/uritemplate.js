@@ -66,9 +66,7 @@ export class MatchData {
     }, []);
   }
 
-  valuesAt() {
-    var indices = Array.prototype.slice(arguments);
-
+  valuesAt(...indices) {
     return indices.map(function(index) {
       this.get(index);
     }, this);
@@ -97,10 +95,8 @@ export default class Template {
   }
 
   expand(mapping, processor) {
-    var self = this;
-
-    return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, function(match) {
-      return self._transformMatch(mapping, match, processor);
+    return Uri.parse(this.pattern.replace(G_EXPRESSION_REGEXP, (match) => {
+      return this._transformMatch(mapping, match, processor);
     }));
   };
 
@@ -265,14 +261,14 @@ export default class Template {
     regexpString = escapedPattern.replace(G_EXPRESSION_REGEXP, function(expansion) {
       var expansionPieces = expansion.match(EXPRESSION_REGEXP),
           operator = expansionPieces[1],
-          varlist = expansionPieces[2],
+          varList = expansionPieces[2],
           leader = escapeRegExp(LEADERS[operator] || ''),
           joiner = escapeRegExp(JOINERS[operator] || ','),
           combined;
 
       expansions.push(expansion);
 
-      combined = varlist.split(',')
+      combined = varList.split(',')
       .map(function valueCombinator(varspec) {
         var varspecPieces = varspec.match(VARSPEC_REGEXP),
             name = varspecPieces[1],

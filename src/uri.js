@@ -162,5 +162,3 @@ Uri.CHAR_CLASSES = {
   QUERY: QUERY,
   FRAGMENT: FRAGMENT
 };
-
-export default Uri;

@@ -1,16 +1,6 @@
 import UriTemplate from './uritemplate';
 import xhr from './xhr';
-
-function extend(obj) {
-  var i, prop, source;
-  for (i = 1; i < arguments.length; ++i) {
-    source = arguments[i];
-    for (prop in source) {
-      obj[prop] = source[prop];
-    }
-  }
-  return obj;
-}
+import merge from 'lodash.merge';
 
 /**
  * Resource
@@ -18,9 +8,9 @@ function extend(obj) {
  * - connections: Map of known shortnames to Resources
  */
 export default class Resource {
-  constructor(descriptor, options) {
+  constructor(descriptor, options = {}) {
     this._description = {};
-    this._requestOptions = options || {};
+    this._requestOptions = options;
     this._parseDescriptor(descriptor);
   }
 
@@ -33,7 +23,8 @@ export default class Resource {
       throw new Error('No shortname given for connection');
     }
 
-    var connection, data = {};
+    let connection;
+    let data = {};
 
     if (typeof connectionName === 'object') {
       connection = this._description[connectionName.name] || null;
@@ -58,13 +49,10 @@ export default class Resource {
   patch(body, params, options) { return this._issueRequest('patch', params, body, options); }
   delete(body, params, options) { return this._issueRequest('delete', params, body, options); }
 
-  _issueRequest(method, params, body, options) {
-    options = options || {};
-
+  _issueRequest(method, params, body, options = {}) {
     var selfConn = this.getConnection({ name: 'self', data: params || {} });
-    var requestOptions = extend({}, this._requestOptions, options, { method: method });
-    requestOptions.headers = extend({}, this._requestOptions.headers || {}, options.headers || {});
-    if (body) {
+    var requestOptions = merge({}, this._requestOptions, options, { method: method });
+    if (body && !requestOptions.body) {
       requestOptions.body = body;
     }
 
@@ -81,7 +69,7 @@ export default class Resource {
     }
 
     Object.keys(descriptor._links).forEach(function(link) {
-      var connection = descriptor._links[link];
+      const connection = descriptor._links[link];
 
       if (!connection.href) {
         throw new Error('Malformed connection "' + link + '"; Missing "href" property');

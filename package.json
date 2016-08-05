@@ -43,5 +43,8 @@
   },
   "peerDependencies": {
     "whatwg-fetch": "^1.0.0"
+  },
+  "dependencies": {
+    "lodash.merge": "^4.5.1"
   }
 }
