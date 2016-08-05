@@ -99,14 +99,14 @@ export default class Uri {
     }
 
     return new Uri({
-      protocol: protocol,
-      user: user,
-      password: password,
-      host: host,
-      port: port,
-      path: path,
-      query: query,
-      fragment: fragment
+      protocol,
+      user,
+      password,
+      host,
+      port,
+      path,
+      query,
+      fragment
     });
   }
 
@@ -149,16 +149,16 @@ export default class Uri {
 }
 
 Uri.CHAR_CLASSES = {
-  ALPHA: ALPHA,
-  DIGIT: DIGIT,
-  GEN_DELIMS: GEN_DELIMS,
-  SUB_DELIMS: SUB_DELIMS,
-  RESERVED: RESERVED,
-  UNRESERVED: UNRESERVED,
-  PCHAR: PCHAR,
-  SCHEME: SCHEME,
-  AUTHORITY: AUTHORITY,
-  PATH: PATH,
-  QUERY: QUERY,
-  FRAGMENT: FRAGMENT
+  ALPHA,
+  DIGIT,
+  GEN_DELIMS,
+  SUB_DELIMS,
+  RESERVED,
+  UNRESERVED,
+  PCHAR,
+  SCHEME,
+  AUTHORITY,
+  PATH,
+  QUERY,
+  FRAGMENT
 };

@@ -184,7 +184,7 @@ export default class Template {
         }
 
         acc.push({
-          name: name,
+          name,
           value: transformedValue
         });
       }
@@ -290,7 +290,7 @@ export default class Template {
     regexpString = '^' + regexpString + '$';
 
     return {
-      expansions: expansions,
+      expansions,
       matcher: new RegExp(regexpString)
     };
   };

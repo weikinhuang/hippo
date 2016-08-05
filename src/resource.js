@@ -51,7 +51,7 @@ export default class Resource {
 
   _issueRequest(method, params, body, options = {}) {
     var selfConn = this.getConnection({ name: 'self', data: params || {} });
-    var requestOptions = merge({}, this._requestOptions, options, { method: method });
+    var requestOptions = merge({}, this._requestOptions, options, { method });
     if (body && !requestOptions.body) {
       requestOptions.body = body;
     }
