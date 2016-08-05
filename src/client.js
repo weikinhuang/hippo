@@ -28,79 +28,80 @@ function extend(obj) {
   return obj;
 }
 
-function Client(apiRoot, options) {
-  if (typeof apiRoot === 'undefined') {
-    throw new Error('Client must be initialized with an API Root');
+export default class Client {
+  constructor(apiRoot, options) {
+    if (typeof apiRoot === 'undefined') {
+      throw new Error('Client must be initialized with an API Root');
+    }
+
+    this._apiRoot = apiRoot;
+    this._options = options || {};
+    this._traversals = {};
+    this._nodes = {};
   }
 
-  this._apiRoot = apiRoot;
-  this._options = options || {};
-  this._traversals = {};
-  this._nodes = {};
-}
+  walk() {
+    var args = Array.prototype.slice.call(arguments);
 
-Client.prototype.walk = function() {
-  var args = Array.prototype.slice.call(arguments);
-
-  return this._getRootDescriptor()
-  .then(this._doWalk.bind(this, args));
-};
-
-Client.prototype.clearDescriptorCache = function() {
-  delete this._descriptorCache;
-};
-
-Client.prototype._doWalk = function(shortNames, head) {
-  var self = this;
-  var walkerPath = toWalkerPath(shortNames);
-  var traversal = this._traversals[walkerPath];
-
-  if (traversal) {
-    return Promise.resolve(this._nodes[traversal]);
+    return this._getRootDescriptor()
+    .then(this._doWalk.bind(this, args));
   }
 
-  return shortNames.reduce(function(chain, shortName) {
-    return chain.then(function(resource) {
-      return self._getDescriptor(resource.getConnection(shortName));
+
+  clearDescriptorCache() {
+    delete this._descriptorCache;
+  }
+
+  _doWalk(shortNames, head) {
+    var self = this;
+    var walkerPath = toWalkerPath(shortNames);
+    var traversal = this._traversals[walkerPath];
+
+    if (traversal) {
+      return Promise.resolve(this._nodes[traversal]);
+    }
+
+    return shortNames.reduce(function(chain, shortName) {
+      return chain.then(function(resource) {
+        return self._getDescriptor(resource.getConnection(shortName));
+      });
+    }, Promise.resolve(head))
+    .then(function(resource) {
+      var uri = resource.getConnection('self');
+      self._traversals[walkerPath] = uri;
+      self._nodes[uri] = resource;
+
+      return resource;
     });
-  }, Promise.resolve(head))
-  .then(function(resource) {
-    var uri = resource.getConnection('self');
-    self._traversals[walkerPath] = uri;
-    self._nodes[uri] = resource;
+  }
 
-    return resource;
-  });
-};
+  _getRootDescriptor() {
+    return this._getDescriptor(this._apiRoot)
+    .catch(function() {
+      throw new Error('API does not conform to expected hypermedia format');
+    });
+  };
 
-Client.prototype._getRootDescriptor = function() {
-  return this._getDescriptor(this._apiRoot)
-  .catch(function() {
-    throw new Error('API does not conform to expected hypermedia format');
-  });
-};
+  _getDescriptor(uri) {
+    if ((this._descriptorCache = this._descriptorCache || {})[uri]) {
+      return this._descriptorCache[uri];
+    }
 
-Client.prototype._getDescriptor = function(uri) {
-  if ((this._descriptorCache = this._descriptorCache || {})[uri]) {
+    this._descriptorCache[uri] = xhr(uri, extend({}, this._options.walkOptions, { method: 'options' }))
+    .then(function(res) {
+      if (res.status < 200 || res.status >= 300) {
+        throw new Error(res.statusText);
+      }
+      return res.json();
+    })
+    .then(function(descriptor) {
+      return new Resource(descriptor, this._options.requestOptions);
+    }.bind(this))
+    .catch(function() {
+      delete this._descriptorCache[uri];
+      throw new Error('Unable to get descriptor for uri "' + uri + '"');
+    }.bind(this));
+
     return this._descriptorCache[uri];
   }
-
-  this._descriptorCache[uri] = xhr(uri, extend({}, this._options.walkOptions, { method: 'options' }))
-  .then(function(res) {
-    if (res.status < 200 || res.status >= 300) {
-      throw new Error(res.statusText);
-    }
-    return res.json();
-  })
-  .then(function(descriptor) {
-    return new Resource(descriptor, this._options.requestOptions);
-  }.bind(this))
-  .catch(function() {
-    delete this._descriptorCache[uri];
-    throw new Error('Unable to get descriptor for uri "' + uri + '"');
-  }.bind(this));
-
-  return this._descriptorCache[uri];
-};
-
-export default Client;
+}

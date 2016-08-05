@@ -1,15 +1,13 @@
 import Uri from './uri';
 
 function isCrossOrigin(origin, remote) {
-  remote = Uri.parse(remote);
+  const remoteUri = Uri.parse(remote);
+  const isSameHost = origin.host === remoteUri.host && origin.port === remoteUri.port;
 
-  return remote.isAbsolute() &&
-         !(origin.host === remote.host && origin.port === remote.port);
+  return remoteUri.isAbsolute() && !isSameHost;
 }
 
-export default function xhr(url, options) {
-  options = options || {};
-
+export default function xhr(url, options = {}) {
   if (url && isCrossOrigin(window.location, url)) {
     options.credentials = 'include';
   }
