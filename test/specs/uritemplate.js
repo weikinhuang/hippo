@@ -9,10 +9,10 @@ function generateTests(testcases, variables) {
       var uri = new UriTemplate(template);
 
       if (Array.isArray(result)) {
-        expect(result).to.include(uri.expand(variables).toString());
+        expect(result).toContain(uri.expand(variables).toString());
       }
       else {
-        expect(uri.expand(variables).toString()).to.equal(result);
+        expect(uri.expand(variables).toString()).toEqual(result);
       }
     });
   });
