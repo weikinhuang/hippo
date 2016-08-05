@@ -1,7 +1,6 @@
 {
   "extends": "./node_modules/eslint-preset-behance/.eslintrc",
   "rules": {
-    "one-var": ["off"],
     "quotes": ["off"]
   }
 }

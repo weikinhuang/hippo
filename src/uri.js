@@ -1,16 +1,16 @@
-var ALPHA = "a-zA-Z",
-    DIGIT = "0-9",
-    GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@",
-    SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=",
-    RESERVED = GEN_DELIMS + SUB_DELIMS,
-    UNRESERVED = ALPHA + DIGIT + "\\-\\.\\_\\~",
-    PCHAR = UNRESERVED + SUB_DELIMS + "\\:\\@",
-    SCHEME = ALPHA + DIGIT + "\\-\\+\\.",
-    AUTHORITY = PCHAR,
-    PATH = PCHAR + "\\/",
-    QUERY = PCHAR + "\\/\\?",
-    FRAGMENT = PCHAR + "\\/\\?",
-    URIREGEX = /^(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
+const ALPHA = "a-zA-Z";
+const DIGIT = "0-9";
+const GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
+const SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
+const RESERVED = GEN_DELIMS + SUB_DELIMS;
+const UNRESERVED = ALPHA + DIGIT + "\\-\\.\\_\\~";
+const PCHAR = UNRESERVED + SUB_DELIMS + "\\:\\@";
+const SCHEME = ALPHA + DIGIT + "\\-\\+\\.";
+const AUTHORITY = PCHAR;
+const PATH = PCHAR + "\\/";
+const QUERY = PCHAR + "\\/\\?";
+const FRAGMENT = PCHAR + "\\/\\?";
+const URIREGEX = /^(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
 
 function scan(string, regExp, extractionPoint) {
   return regExp.test(string) ? string.match(regExp)[extractionPoint] : null;
@@ -75,16 +75,19 @@ export default class Uri {
   static parse(uri) {
     if (!uri) { return new Uri(); }
 
-    var uriPieces = uri.match(new RegExp(URIREGEX)),
-        protocol = uriPieces[1],
-        authority = uriPieces[2],
-        path = uriPieces[3],
-        query = uriPieces[4],
-        fragment = uriPieces[5],
-        user, password, host, port, userInfo;
+    const uriPieces = uri.match(new RegExp(URIREGEX));
+    const protocol = uriPieces[1];
+    const authority = uriPieces[2];
+    const path = uriPieces[3];
+    const query = uriPieces[4];
+    const fragment = uriPieces[5];
+    let user;
+    let password;
+    let host;
+    let port;
 
     if (authority) {
-      userInfo = scan(authority, /^([^\[\]]*)@/, 1);
+      let userInfo = scan(authority, /^([^\[\]]*)@/, 1);
 
       if (userInfo) {
         user = scan(userInfo, /^([^:]*):?/, 1);
@@ -119,8 +122,8 @@ export default class Uri {
     }
 
     return string.replace(regExp, function encode(m) {
-      var charCode = m[0].charCodeAt(0),
-          encoded = [];
+      const charCode = m[0].charCodeAt(0);
+      const encoded = [];
 
       if (charCode < 128) {
         encoded.push(charCode);

@@ -7,8 +7,8 @@ describe('Uri', function() {
 
   describe('#parse', function() {
     describe('when given no uri', function() {
-      var uri = '',
-          emptyUri = Uri.parse(uri);
+      const uri = '';
+      const emptyUri = Uri.parse(uri);
 
       it('has no a protocol', function() {
         expect(emptyUri.protocol).toEqual('');
@@ -60,8 +60,8 @@ describe('Uri', function() {
     });
 
     describe('when given a full uri', function() {
-      var uri = 'http://user:password@example.com:8080/path?query=value#fragment',
-          fullUri = Uri.parse(uri);
+      const uri = 'http://user:password@example.com:8080/path?query=value#fragment';
+      const fullUri = Uri.parse(uri);
 
       it('has a protocol', function() {
         expect(fullUri.protocol).toEqual('http');
@@ -113,8 +113,8 @@ describe('Uri', function() {
     });
 
     describe('when created with string components', function() {
-      var uri = 'http://example.com',
-          stringUri = new Uri({ protocol: 'http', host: 'example.com' });
+      const uri = 'http://example.com';
+      const stringUri = new Uri({ protocol: 'http', host: 'example.com' });
 
       it('has a site value of "http://example.com"', function() {
         expect(stringUri.site()).toEqual(uri);
