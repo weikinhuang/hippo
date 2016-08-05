@@ -125,7 +125,7 @@ describe('Client', function() {
         });
       });
 
-      it('returns a resolved promise of a resouce', function(done) {
+      it('returns a resolved promise of a resource', function(done) {
         var client = new Client('/v1');
 
         server.respondWith('OPTIONS', '/v1', responses.root);
@@ -147,7 +147,7 @@ describe('Client', function() {
 
           client.walk('bar')
           .catch((e) => {
-            expect(e.message).toMatch(/Unknown connectio/);
+            expect(e.message).toMatch(/Unknown connection/);
           })
           .then(done, done.fail);
         });
