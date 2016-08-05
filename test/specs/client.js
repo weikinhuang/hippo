@@ -1,4 +1,4 @@
-define(['chai-as-promised', 'lib/client', 'lib/resource'], function(chaiAsPromised, Client, Resource) {
+define(['chai-as-promised', 'src/client', 'src/resource'], function(chaiAsPromised, Client, Resource) {
   chai.use(chaiAsPromised);
 
   describe('Client', function() {
