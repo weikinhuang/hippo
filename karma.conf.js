@@ -22,7 +22,7 @@ module.exports = function(config) {
   config.set({
     basePath: '',
 
-    frameworks: ['mocha', 'chai', 'sinon-chai'],
+    frameworks: ['jasmine', 'sinon'],
 
     files: [
       'node_modules/babel-polyfill/dist/polyfill.js',

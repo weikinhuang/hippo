@@ -2,7 +2,7 @@ import Uri from 'src/uri';
 
 describe('Uri', function() {
   it('can be instantiated', function() {
-    expect(new Uri()).to.be.an.instanceOf(Uri);
+    expect(new Uri() instanceof Uri).toBeTruthy();
   });
 
   describe('#parse', function() {
@@ -11,51 +11,51 @@ describe('Uri', function() {
           emptyUri = Uri.parse(uri);
 
       it('has no a protocol', function() {
-        expect(emptyUri.protocol).to.equal('');
+        expect(emptyUri.protocol).toEqual('');
       });
 
       it('has no a user', function() {
-        expect(emptyUri.user).to.equal('');
+        expect(emptyUri.user).toEqual('');
       });
 
       it('has no a password', function() {
-        expect(emptyUri.password).to.equal('');
+        expect(emptyUri.password).toEqual('');
       });
 
       it('has no a host', function() {
-        expect(emptyUri.host).to.equal('');
+        expect(emptyUri.host).toEqual('');
       });
 
       it('has no a port', function() {
-        expect(emptyUri.port).to.equal('');
+        expect(emptyUri.port).toEqual('');
       });
 
       it('has no a path', function() {
-        expect(emptyUri.path).to.equal('');
+        expect(emptyUri.path).toEqual('');
       });
 
       it('has no a query', function() {
-        expect(emptyUri.query).to.equal('');
+        expect(emptyUri.query).toEqual('');
       });
 
       it('has no a fragment', function() {
-        expect(emptyUri.fragment).to.equal('');
+        expect(emptyUri.fragment).toEqual('');
       });
 
       it('has no userInfo', function() {
-        expect(emptyUri.userInfo()).to.equal('');
+        expect(emptyUri.userInfo()).toEqual('');
       });
 
       it('has no authority', function() {
-        expect(emptyUri.authority()).to.equal('');
+        expect(emptyUri.authority()).toEqual('');
       });
 
       it('has no site', function() {
-        expect(emptyUri.site()).to.equal('');
+        expect(emptyUri.site()).toEqual('');
       });
 
       it('toString matches original uri string', function() {
-        expect(emptyUri.toString()).to.equal(uri);
+        expect(emptyUri.toString()).toEqual(uri);
       });
     });
 
@@ -64,51 +64,51 @@ describe('Uri', function() {
           fullUri = Uri.parse(uri);
 
       it('has a protocol', function() {
-        expect(fullUri.protocol).to.equal('http');
+        expect(fullUri.protocol).toEqual('http');
       });
 
       it('has a user', function() {
-        expect(fullUri.user).to.equal('user');
+        expect(fullUri.user).toEqual('user');
       });
 
       it('has a password', function() {
-        expect(fullUri.password).to.equal('password');
+        expect(fullUri.password).toEqual('password');
       });
 
       it('has a host', function() {
-        expect(fullUri.host).to.equal('example.com');
+        expect(fullUri.host).toEqual('example.com');
       });
 
       it('has a port', function() {
-        expect(fullUri.port).to.equal('8080');
+        expect(fullUri.port).toEqual('8080');
       });
 
       it('has a path', function() {
-        expect(fullUri.path).to.equal('/path');
+        expect(fullUri.path).toEqual('/path');
       });
 
       it('has a query', function() {
-        expect(fullUri.query).to.equal('query=value');
+        expect(fullUri.query).toEqual('query=value');
       });
 
       it('has a fragment', function() {
-        expect(fullUri.fragment).to.equal('fragment');
+        expect(fullUri.fragment).toEqual('fragment');
       });
 
       it('has userInfo', function() {
-        expect(fullUri.userInfo()).to.equal('user:password');
+        expect(fullUri.userInfo()).toEqual('user:password');
       });
 
       it('has an authority', function() {
-        expect(fullUri.authority()).to.equal('user:password@example.com:8080');
+        expect(fullUri.authority()).toEqual('user:password@example.com:8080');
       });
 
       it('has a site', function() {
-        expect(fullUri.site()).to.equal('http://user:password@example.com:8080');
+        expect(fullUri.site()).toEqual('http://user:password@example.com:8080');
       });
 
       it('toString matches original uri string', function() {
-        expect(fullUri.toString()).to.equal(uri);
+        expect(fullUri.toString()).toEqual(uri);
       });
     });
 
@@ -117,11 +117,11 @@ describe('Uri', function() {
           stringUri = new Uri({ protocol: 'http', host: 'example.com' });
 
       it('has a site value of "http://example.com"', function() {
-        expect(stringUri.site()).to.equal(uri);
+        expect(stringUri.site()).toEqual(uri);
       });
 
       it('is equivalent to the parsed URI', function() {
-        expect(stringUri).to.deep.equal(Uri.parse(uri));
+        expect(stringUri).toEqual(Uri.parse(uri));
       });
     });
 
@@ -132,39 +132,39 @@ describe('Uri', function() {
       });
 
       it('does not infer the protocol', function() {
-        expect(authorityUri.port).to.equal('');
+        expect(authorityUri.port).toEqual('');
       });
 
       it('does not inder the port', function() {
-        expect(authorityUri.port).to.equal('');
+        expect(authorityUri.port).toEqual('');
       });
 
       it('has a protocol relative site value of "//user@example.com"', function() {
-        expect(authorityUri.site()).to.equal('//user@example.com');
+        expect(authorityUri.site()).toEqual('//user@example.com');
       });
     });
   });
 
   describe('#encodeComponent', function() {
     it('returns the component in percent encoding', function() {
-      expect(Uri.encodeComponent('Hello World')).to.equal('Hello%20World');
+      expect(Uri.encodeComponent('Hello World')).toEqual('Hello%20World');
     });
 
     describe('when encoding a string with an existing encoding', function() {
       it('returns the correct percent encoded string', function() {
-        expect(Uri.encodeComponent('JK%4c', '0-9A-IKM-Za-z%')).to.equal('%4AK%4c');
+        expect(Uri.encodeComponent('JK%4c', '0-9A-IKM-Za-z%')).toEqual('%4AK%4c');
       });
     });
 
     describe('when encoding a multibyte string', function() {
       it('returns the correct percent encoded string', function() {
-        expect(Uri.encodeComponent('günther')).to.equal('g%C3%BCnther');
+        expect(Uri.encodeComponent('günther')).toEqual('g%C3%BCnther');
       });
     });
 
     describe('when encoding a string with ASCII chars 0-15', function() {
       it('returns the correct percent encoded string', function() {
-        expect(Uri.encodeComponent('one\ntwo')).to.equal('one%0Atwo');
+        expect(Uri.encodeComponent('one\ntwo')).toEqual('one%0Atwo');
       });
     });
   });

@@ -1,15 +1,8 @@
-import chaiAsPromised from 'chai-as-promised';
 import Resource from 'src/resource';
-
-chai.use(chaiAsPromised);
-
-function parseResponse(res) {
-  return res.json();
-}
 
 describe('Resource', function() {
   it('is a constructor', function() {
-    expect(new Resource({ _links: {} })).to.be.an.instanceOf(Resource);
+    expect(new Resource({ _links: {} }) instanceof Resource).toBeTruthy();
   });
 
   describe('constructor', function() {
@@ -17,7 +10,7 @@ describe('Resource', function() {
       it('throws an error', function() {
         expect(function() {
           new Resource();
-        }).to.throw(/Resource constructor requires a description/);
+        }).toThrowError(/Resource constructor requires a description/);
       });
     });
 
@@ -25,7 +18,7 @@ describe('Resource', function() {
       it('throws an error', function() {
         expect(function() {
           new Resource({ lol: 'bad data' });
-        }).to.throw(/Resource constructor given a malformed descriptor/);
+        }).toThrowError(/Resource constructor given a malformed descriptor/);
       });
     });
 
@@ -38,7 +31,7 @@ describe('Resource', function() {
         };
         expect(function() {
           new Resource(descriptor);
-        }).to.throw(/Malformed connection/);
+        }).toThrowError(/Malformed connection/);
       });
     });
   });
@@ -57,7 +50,7 @@ describe('Resource', function() {
       };
       var resource = new Resource(descriptor);
 
-      expect(resource.description()).to.equal(descriptor._links);
+      expect(resource.description()).toEqual(descriptor._links);
     });
   });
 
@@ -78,7 +71,7 @@ describe('Resource', function() {
       it('throws an error', function() {
         expect(function() {
           resource.getConnection('');
-        }).to.throw(/No shortname given for connection/);
+        }).toThrowError(/No shortname given for connection/);
       });
     });
 
@@ -86,14 +79,14 @@ describe('Resource', function() {
       it('throws an error', function() {
         expect(function() {
           resource.getConnection('bar');
-        }).to.throw(/Unknown connection/);
+        }).toThrowError(/Unknown connection/);
       });
     });
 
     describe('when given a shortname that is known', function() {
       it('returns the href for that connection', function() {
-        expect(resource.getConnection('self')).to.equal('/');
-        expect(resource.getConnection('foo')).to.equal('/foo');
+        expect(resource.getConnection('self')).toEqual('/');
+        expect(resource.getConnection('foo')).toEqual('/foo');
       });
     });
 
@@ -106,7 +99,7 @@ describe('Resource', function() {
           }
         };
 
-        expect(resource.getConnection(connection)).to.equal('/foo?bar=5');
+        expect(resource.getConnection(connection)).toEqual('/foo?bar=5');
       });
     });
   });
@@ -140,81 +133,96 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a GET request to the resource', function() {
+      it('returns the result of sending a GET request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('GET', '/v1/foo', responses.foo);
-        return expect(resource.get().then(parseResponse)).to.become(result);
+        resource.get()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a params object', function() {
-        it('return the result of sending a GET request to the templated resource', function() {
+        it('return the result of sending a GET request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('GET', '/v1/foo?bar=10', responses.foo);
-          return expect(resource.get({ bar: 10 }).then(parseResponse)).to.become(result);
+          resource.get({ bar: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.get({ bar: 10 });
+          resource.get({ bar: 10 });
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.get({ bar: 10 }, { headers: { foo: 'bar' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
         });
       });
 
       describe('when given resource and request level headers', function() {
-        it('merges those options to the ajax request method', function() {
+        it('merges those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
-            expect(req.requestHeaders.other).to.equal('str');
+            expect(req.requestHeaders.foo).toEqual('bar');
+            expect(req.requestHeaders.other).toEqual('str');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.get({ bar: 10 }, { headers: { other: 'str' } });
+          resource.get({ bar: 10 }, { headers: { other: 'str' } });
         });
 
-        it('overwrites those options to the ajax request method', function() {
+        it('overwrites those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -235,56 +243,69 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a DELETE request to the resource', function() {
+      it('returns the result of sending a DELETE request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('HEAD', '/v1/foo', responses.foo);
-        return expect(resource.head().then(parseResponse)).to.become(result);
+        resource.head()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a params object', function() {
-        it('return the result of sending a DELETE request to the templated resource', function() {
+        it('return the result of sending a DELETE request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('HEAD', '/v1/foo?bar=10', responses.foo);
-          return expect(resource.head({ bar: 10 }).then(parseResponse)).to.become(result);
+          resource.head({ bar: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.head({ bar: 10 });
+          resource.head({ bar: 10 });
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.head({ bar: 10 }, { headers: { foo: 'bar' } });
+          resource.head({ bar: 10 }, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('HEAD', '/v1/foo?bar=10', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.head({ bar: 10 }, { headers: { foo: 'baz' } });
+          resource.head({ bar: 10 }, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -305,82 +326,106 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a POST request to the resource', function() {
+      it('returns the result of sending a POST request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('POST', '/v1/foo', responses.foo);
-        return expect(resource.post().then(parseResponse)).to.become(result);
+        resource.post()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a data object', function() {
-        it('returns the result of sending a POST request with data to resource', function() {
+        it('returns the result of sending a POST request with data to resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('POST', '/v1/foo', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.post(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
+          resource.post(JSON.stringify({ bar: 10 }))
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object', function() {
-        it('returns the result of sending a POST request to the templated resource', function() {
+        it('returns the result of sending a POST request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('POST', '/v1/foo?baz=10', responses.foo);
-          return expect(resource.post(null, { baz: 10 }).then(parseResponse)).to.become(result);
+
+          resource.post(null, { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object and data object', function() {
-        it('returns the result of sending a POST request with data to the templated resource', function() {
+        it('returns the result of sending a POST request with data to the templated resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('POST', '/v1/foo?baz=10', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.post(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
+          resource.post(JSON.stringify({ bar: 10 }), { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('POST', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.post(JSON.stringify({ bar: 10 }));
+          resource.post(JSON.stringify({ bar: 10 }));
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('POST', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
+          resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('POST', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
+          resource.post(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -401,82 +446,107 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a PUT request to the resource', function() {
+      it('returns the result of sending a PUT request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('PUT', '/v1/foo', responses.foo);
-        return expect(resource.put().then(parseResponse)).to.become(result);
+
+        resource.put()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a data object', function() {
-        it('returns the result of sending a PUT request with data to resource', function() {
+        it('returns the result of sending a PUT request with data to resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PUT', '/v1/foo', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.put(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
+          resource.put(JSON.stringify({ bar: 10 }))
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object', function() {
-        it('returns the result of sending a PUT request to the templated resource', function() {
+        it('returns the result of sending a PUT request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('PUT', '/v1/foo?baz=10', responses.foo);
-          return expect(resource.put(null, { baz: 10 }).then(parseResponse)).to.become(result);
+
+          resource.put(null, { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object and data object', function() {
-        it('returns the result of sending a PUT request with data to the templated resource', function() {
+        it('returns the result of sending a PUT request with data to the templated resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PUT', '/v1/foo?baz=10', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.put(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
+          resource.put(JSON.stringify({ bar: 10 }), { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('PUT', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.put(JSON.stringify({ bar: 10 }));
+          resource.put(JSON.stringify({ bar: 10 }));
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PUT', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
+          resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('PUT', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
+          resource.put(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -497,82 +567,107 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a PATCH request to the resource', function() {
+      it('returns the result of sending a PATCH request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('PATCH', '/v1/foo', responses.foo);
-        return expect(resource.patch().then(parseResponse)).to.become(result);
+
+        resource.patch()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a data object', function() {
-        it('returns the result of sending a PATCH request with data to resource', function() {
+        it('returns the result of sending a PATCH request with data to resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.patch(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
+          resource.patch(JSON.stringify({ bar: 10 }))
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object', function() {
-        it('returns the result of sending a PATCH request to the templated resource', function() {
+        it('returns the result of sending a PATCH request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('PATCH', '/v1/foo?baz=10', responses.foo);
-          return expect(resource.patch(null, { baz: 10 }).then(parseResponse)).to.become(result);
+
+          resource.patch(null, { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object and data object', function() {
-        it('returns the result of sending a PATCH request with data to the templated resource', function() {
+        it('returns the result of sending a PATCH request with data to the templated resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PATCH', '/v1/foo?baz=10', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.patch(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
+          resource.patch(JSON.stringify({ bar: 10 }), { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.patch(JSON.stringify({ bar: 10 }));
+          resource.patch(JSON.stringify({ bar: 10 }));
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
+          resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('PATCH', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
+          resource.patch(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -593,82 +688,107 @@ describe('Resource', function() {
         foo: [200, { "Content-Type": "application/json" }, JSON.stringify(result)],
       };
 
-      it('returns the result of sending a DELETE request to the resource', function() {
+      it('returns the result of sending a DELETE request to the resource', function(done) {
         var resource = new Resource(descriptor);
         server.respondWith('DELETE', '/v1/foo', responses.foo);
-        return expect(resource.delete().then(parseResponse)).to.become(result);
+
+        resource.delete()
+        .then((res) => res.json())
+        .then((res) => {
+          expect(res).toEqual(result);
+        })
+        .then(done, done.fail);
       });
 
       describe('when given a data object', function() {
-        it('returns the result of sending a DELETE request with data to resource', function() {
+        it('returns the result of sending a DELETE request with data to resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.delete(JSON.stringify({ bar: 10 })).then(parseResponse)).to.become(result);
+          resource.delete(JSON.stringify({ bar: 10 }))
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object', function() {
-        it('returns the result of sending a DELETE request to the templated resource', function() {
+        it('returns the result of sending a DELETE request to the templated resource', function(done) {
           var resource = new Resource(descriptor);
           server.respondWith('DELETE', '/v1/foo?baz=10', responses.foo);
-          return expect(resource.delete(null, { baz: 10 }).then(parseResponse)).to.become(result);
+
+          resource.delete(null, { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given a params object and JSON data', function() {
-        it('returns the result of sending a DELETE request with data to the templated resource', function() {
+        it('returns the result of sending a DELETE request with data to the templated resource', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('DELETE', '/v1/foo?baz=10', function(req) {
-            expect(req.requestBody).to.equal('{"bar":10}');
+            expect(req.requestBody).toEqual('{"bar":10}');
             req.respond.apply(req, responses.foo);
           });
 
-          return expect(resource.delete(JSON.stringify({ bar: 10 }), { baz: 10 }).then(parseResponse)).to.become(result);
+          resource.delete(JSON.stringify({ bar: 10 }), { baz: 10 })
+          .then((res) => res.json())
+          .then((res) => {
+            expect(res).toEqual(result);
+          })
+          .then(done, done.fail);
         });
       });
 
       describe('when given resource level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.delete(JSON.stringify({ bar: 10 }));
+          resource.delete(JSON.stringify({ bar: 10 }));
         });
       });
 
       describe('when given request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor);
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('bar');
+            expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
+          resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'bar' } });
         });
       });
 
       describe('when given resource and request level options', function() {
-        it('passes those options to the ajax request method', function() {
+        it('passes those options to the ajax request method', function(done) {
           var resource = new Resource(descriptor, { headers: { foo: 'bar' } });
 
           server.respondWith('DELETE', '/v1/foo', function(req) {
-            expect(req.requestHeaders.foo).to.equal('baz');
+            expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { "Content-Type": "text/plain" }, '');
+            done();
           });
 
-          return resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
+          resource.delete(JSON.stringify({ bar: 10 }), {}, { headers: { foo: 'baz' } });
         });
       });
     });
@@ -701,23 +821,24 @@ describe('Resource', function() {
       server = null;
     });
 
-    it('does not modify the root options object', function() {
+    it('does not modify the root options object', function(done) {
       var options = { headers: { foo: 'bar' } };
       var resource = new Resource(descriptor, options);
       var resourceB = new Resource(otherDescriptor, options);
 
       server.respondWith('GET', '/v1/foo', function(req) {
-        expect(req.requestHeaders.foo).to.equal('baz');
+        expect(req.requestHeaders.foo).toEqual('baz');
         req.respond(200, { "Content-Type": "text/plain" }, '');
       });
 
       server.respondWith('GET', '/v1/bar', function(req) {
-        expect(req.requestHeaders.foo).to.equal('bar');
+        expect(req.requestHeaders.foo).toEqual('bar');
         req.respond(200, { "Content-Type": "text/plain" }, '');
       });
 
-      return resource.get({}, { headers: { foo: 'baz' } })
-      .then(function() { return resourceB.get(); });
+      resource.get({}, { headers: { foo: 'baz' } })
+      .then(function() { return resourceB.get(); })
+      .then(done, done.fail);
     });
   });
 });

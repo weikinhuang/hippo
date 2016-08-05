@@ -1,7 +1,7 @@
 {
   "extends": "../.eslintrc",
   "env": {
-    "mocha": true
+    "jasmine": true
   },
   "globals": {
     "chai": true,

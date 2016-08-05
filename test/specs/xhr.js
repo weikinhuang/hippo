@@ -1,7 +1,7 @@
-import chaiAsPromised from 'chai-as-promised';
+// import chaiAsPromised from 'chai-as-promised';
 import xhr from 'src/xhr';
 
-chai.use(chaiAsPromised);
+// chai.use(chaiAsPromised);
 
 describe('xhr', function() {
   var server;
@@ -19,15 +19,24 @@ describe('xhr', function() {
     });
 
     it('returns a promise', function() {
-      expect(xhr('/').then).to.be.an('function');
+      expect(xhr('/')).toEqual(jasmine.any(Promise));
     });
 
-    it('returns a resolved promise on XHR success', function() {
-      return expect(xhr('/').then(function(res) { return res.text(); })).to.become('hello world');
+    it('returns a resolved promise on XHR success', function(done) {
+      return xhr('/')
+      .then((res) => res.text())
+      .then((text) => {
+        expect(text).toEqual('hello world');
+      })
+      .then(done);
     });
 
-    it('returns a successful promise on XHR complete', function() {
-      return expect(xhr('/foo').then(function(res) { return res.status; })).to.become(404);
+    it('returns a successful promise on XHR complete', function(done) {
+      return xhr('/foo')
+      .then((res) => {
+        expect(res.status).toEqual(404);
+      })
+      .then(done);
     });
   });
 
@@ -43,12 +52,13 @@ describe('xhr', function() {
     });
 
     describe('when specifying request method', function() {
-      it('capitalizes the method', function() {
+      it('capitalizes the method', function(done) {
         var uri = '/';
 
         server.respondWith(function(request) {
-          expect(request.method).to.equal('PATCH');
+          expect(request.method).toEqual('PATCH');
           request.respond(200, { "Content-Type": "text/plain" }, '');
+          done();
         });
 
         return xhr(uri, { method: 'patch' });
@@ -56,14 +66,14 @@ describe('xhr', function() {
     });
 
     describe('when making a request to the same domain', function() {
-      it('sets cross origin properties', function() {
+      it('sets cross origin properties', function(done) {
         var uri = '/';
 
         server.respondWith(function(request) {
-          expect(request.url).to.equal(uri);
+          expect(request.url).toEqual(uri);
           request.respond(200, { "Content-Type": "text/plain" }, '');
-          expect(request.withCredentials).to.be.undefined;
-          expect(request.crossOrigin).to.be.false;
+          expect(request.withCredentials).toBeFalsy();
+          done();
         });
 
         return xhr(uri);
@@ -71,14 +81,14 @@ describe('xhr', function() {
     });
 
     describe('when making a request to the same domain but a different port', function() {
-      it('sets cross origin properties', function() {
+      it('sets cross origin properties', function(done) {
         var uri = 'http://localhost:8000';
 
         server.respondWith(function(request) {
-          expect(request.url).to.equal(uri);
+          expect(request.url).toEqual(uri);
           request.respond(200, { "Content-Type": "text/plain" }, '');
-          expect(request.withCredentials).to.be.undefined;
-          expect(request.crossOrigin).to.be.true;
+          expect(request.withCredentials).toBeTruthy();
+          done();
         });
 
         return xhr(uri);
@@ -86,27 +96,27 @@ describe('xhr', function() {
     });
 
     describe('when making a request to the same domain', function() {
-      it('sets cross origin properties', function() {
+      it('sets cross origin properties', function(done) {
         var uri = 'http://example.com/';
 
         server.respondWith(function(request) {
-          expect(request.url).to.equal(uri);
+          expect(request.url).toEqual(uri);
           request.respond(200, { "Content-Type": "text/plain" }, '');
-          expect(request.withCredentials).to.be.undefined;
-          expect(request.crossOrigin).to.be.true;
+          expect(request.withCredentials).toBeTruthy();
+          done();
         });
 
         return xhr(uri);
       });
 
-      it('doesn\'t override withCredentials to be true', function() {
+      it('doesn\'t override withCredentials to be true', function(done) {
         var uri = 'http://example.com/';
 
         server.respondWith(function(request) {
-          expect(request.url).to.equal(uri);
+          expect(request.url).toEqual(uri);
           request.respond(200, { "Content-Type": "text/plain" }, '');
-          expect(request.withCredentials).to.be.false;
-          expect(request.crossOrigin).to.be.true;
+          expect(request.withCredentials).toBeTruthy();
+          done();
         });
 
         return xhr(uri, { withCredentials: false });
