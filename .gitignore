@@ -1,6 +1,5 @@
 node_modules
 .watsonrc
-bower_components
 dist
 npm-debug.log
 coverage
