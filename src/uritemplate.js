@@ -2,16 +2,16 @@ import Uri from './uri';
 
 const VARIABLE_CHAR_CLASS = Uri.CHAR_CLASSES.ALPHA + Uri.CHAR_CLASSES.DIGIT + '_';
 const ALL = Uri.CHAR_CLASSES.RESERVED + Uri.CHAR_CLASSES.UNRESERVED;
-const VAR_CHAR = "(?:(?:[" + VARIABLE_CHAR_CLASS + "]|%[a-fA-F0-9][a-fA-F0-9])+)";
-const RESERVED = "(?:[" + ALL + "]|%[a-fA-F0-9][a-fA-F0-9])";
-const UNRESERVED = "(?:[#{" + UNRESERVED + "}]|%[a-fA-F0-9][a-fA-F0-9])"; // eslint-disable-line no-use-before-define
-const VARIABLE = "(?:" + VAR_CHAR + "(?:\\.?" + VAR_CHAR + ")*)";
-const VARSPEC = "(?:(" + VARIABLE + ")(\\*|:\\d+)?)";
-const OPERATOR = "+#./;?&=,!@|";
+const VAR_CHAR = '(?:(?:[' + VARIABLE_CHAR_CLASS + ']|%[a-fA-F0-9][a-fA-F0-9])+)';
+const RESERVED = '(?:[' + ALL + ']|%[a-fA-F0-9][a-fA-F0-9])';
+const UNRESERVED = '(?:[#{' + UNRESERVED + '}]|%[a-fA-F0-9][a-fA-F0-9])'; // eslint-disable-line no-use-before-define
+const VARIABLE = "(?:" + VAR_CHAR + "(?:\\.?" + VAR_CHAR + ")*)"; // eslint-disable-line quotes
+const VARSPEC = "(?:(" + VARIABLE + ")(\\*|:\\d+)?)"; // eslint-disable-line quotes
+const OPERATOR = '+#./;?&=,!@|';
 
-const VARSPEC_REGEXP = new RegExp("^" + VARSPEC + "$");
-const EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}");
-const G_EXPRESSION_REGEXP = new RegExp("{([" + OPERATOR + "])?(" + VARSPEC + "(?:," + VARSPEC + ")*)}", 'g');
+const VARSPEC_REGEXP = new RegExp('^' + VARSPEC + '$');
+const EXPRESSION_REGEXP = new RegExp('{([' + OPERATOR + '])?(' + VARSPEC + '(?:,' + VARSPEC + ')*)}');
+const G_EXPRESSION_REGEXP = new RegExp('{([' + OPERATOR + '])?(' + VARSPEC + '(?:,' + VARSPEC + ')*)}', 'g');
 
 const LEADERS = {
   '?': '?',
@@ -52,7 +52,7 @@ export class MatchData {
     this.uri = uri;
     this.template = template;
     this.mapping = mapping;
-    this.preMatch = "";
+    this.preMatch = '';
   }
 
   variables() {

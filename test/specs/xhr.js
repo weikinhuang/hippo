@@ -57,7 +57,7 @@ describe('xhr', function() {
 
         server.respondWith(function(request) {
           expect(request.method).toEqual('PATCH');
-          request.respond(200, { "Content-Type": "text/plain" }, '');
+          request.respond(200, { 'Content-Type': 'text/plain' }, '');
           done();
         });
 
@@ -71,7 +71,7 @@ describe('xhr', function() {
 
         server.respondWith(function(request) {
           expect(request.url).toEqual(uri);
-          request.respond(200, { "Content-Type": "text/plain" }, '');
+          request.respond(200, { 'Content-Type': 'text/plain' }, '');
           expect(request.withCredentials).toBeFalsy();
           done();
         });
@@ -86,7 +86,7 @@ describe('xhr', function() {
 
         server.respondWith(function(request) {
           expect(request.url).toEqual(uri);
-          request.respond(200, { "Content-Type": "text/plain" }, '');
+          request.respond(200, { 'Content-Type': 'text/plain' }, '');
           expect(request.withCredentials).toBeTruthy();
           done();
         });
@@ -101,7 +101,7 @@ describe('xhr', function() {
 
         server.respondWith(function(request) {
           expect(request.url).toEqual(uri);
-          request.respond(200, { "Content-Type": "text/plain" }, '');
+          request.respond(200, { 'Content-Type': 'text/plain' }, '');
           expect(request.withCredentials).toBeTruthy();
           done();
         });
@@ -114,7 +114,7 @@ describe('xhr', function() {
 
         server.respondWith(function(request) {
           expect(request.url).toEqual(uri);
-          request.respond(200, { "Content-Type": "text/plain" }, '');
+          request.respond(200, { 'Content-Type': 'text/plain' }, '');
           expect(request.withCredentials).toBeTruthy();
           done();
         });

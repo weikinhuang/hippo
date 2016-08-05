@@ -1,15 +1,15 @@
-const ALPHA = "a-zA-Z";
-const DIGIT = "0-9";
-const GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
-const SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
+const ALPHA = 'a-zA-Z';
+const DIGIT = '0-9';
+const GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@"; // eslint-disable-line quotes
+const SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\="; // eslint-disable-line quotes
 const RESERVED = GEN_DELIMS + SUB_DELIMS;
-const UNRESERVED = ALPHA + DIGIT + "\\-\\.\\_\\~";
-const PCHAR = UNRESERVED + SUB_DELIMS + "\\:\\@";
-const SCHEME = ALPHA + DIGIT + "\\-\\+\\.";
+const UNRESERVED = ALPHA + DIGIT + "\\-\\.\\_\\~"; // eslint-disable-line quotes
+const PCHAR = UNRESERVED + SUB_DELIMS + "\\:\\@"; // eslint-disable-line quotes
+const SCHEME = ALPHA + DIGIT + "\\-\\+\\."; // eslint-disable-line quotes
 const AUTHORITY = PCHAR;
-const PATH = PCHAR + "\\/";
-const QUERY = PCHAR + "\\/\\?";
-const FRAGMENT = PCHAR + "\\/\\?";
+const PATH = PCHAR + "\\/"; // eslint-disable-line quotes
+const QUERY = PCHAR + "\\/\\?"; // eslint-disable-line quotes
+const FRAGMENT = PCHAR + "\\/\\?"; // eslint-disable-line quotes
 const URIREGEX = /^(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
 
 function scan(string, regExp, extractionPoint) {
