@@ -7,6 +7,7 @@
     "start": "./node_modules/karma/bin/karma start",
     "test": "eslint . && ./node_modules/karma/bin/karma start --singleRun",
     "spec": "./node_modules/karma/bin/karma start --singleRun",
+    "test:dev": "./node_modules/karma/bin/karma start",
     "lint": "eslint ."
   },
   "keywords": [
@@ -27,11 +28,12 @@
     "istanbul-instrumenter-loader": "^0.2.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.2",
-    "karma-chrome-launcher": "^0.1.4",
-    "karma-coverage": "^0.2.5",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.0.2",
     "karma-mocha-reporter": "^2.1.0",
     "karma-notify-reporter": "^1.0.1",
+    "karma-phantomjs-launcher": "^1.0.1",
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^1.7.0",
     "mocha": "^3.0.0",

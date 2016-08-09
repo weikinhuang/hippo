@@ -90,12 +90,10 @@ export default class Resource {
     // set cache headers
     if (!NO_CACHE_REGEX.test(requestOptions.cache || '') && this._requestCache.has(url)) {
       muxCacheHeaders(requestOptions.headers, this._requestCache.get(url).headers);
-      console.log('using cache');
     }
     return xhr(url, requestOptions)
     .then((res) => {
       if (res.status === 304 && this._requestCache.has(url)) {
-        console.log('returning cache');
         return this._requestCache.get(url).clone();
       }
       if (isCacheable(res)) {
