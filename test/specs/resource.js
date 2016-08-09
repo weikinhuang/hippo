@@ -225,6 +225,149 @@ describe('Resource', function() {
           resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
         });
       });
+
+      describe('when server responds with cache headers', function() {
+        it('caches subsequent cache-able requests with last-modified', function(done) {
+          var resource = new Resource(descriptor);
+          let counter = 0;
+
+          server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+            counter++;
+            if (!req.requestHeaders['if-modified-since']) {
+              expect(counter).toEqual(1);
+              req.respond(200, {
+                'Content-Type': 'application/json',
+                'Last-Modified': 'Tue, 09 Aug 2016 14:23:49 GMT'
+              }, JSON.stringify(result));
+              return;
+            }
+            expect(counter).toBeGreaterThan(1);
+            expect(req.requestHeaders['if-modified-since']).toEqual('Tue, 09 Aug 2016 14:23:49 GMT');
+            req.respond(304, {}, '');
+          });
+
+          resource.get({ bar: 10 })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.hello).toEqual('world');
+            return resource.get({ bar: 10 });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.hello).toEqual('world');
+          })
+          .then(done, done.fail);
+        });
+
+        it('caches subsequent cache-able requests with etag', function(done) {
+          var resource = new Resource(descriptor);
+          let counter = 0;
+
+          server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+            counter++;
+            if (!req.requestHeaders['if-none-match']) {
+              expect(counter).toEqual(1);
+              req.respond(200, {
+                'Content-Type': 'application/json',
+                Etag: 'foobar'
+              }, JSON.stringify(result));
+              return;
+            }
+            expect(counter).toBeGreaterThan(1);
+            expect(req.requestHeaders['if-none-match']).toEqual('foobar');
+            req.respond(304, {}, '');
+          });
+
+          resource.get({ bar: 10 })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.hello).toEqual('world');
+            return resource.get({ bar: 10 });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.hello).toEqual('world');
+          })
+          .then(done, done.fail);
+        });
+      });
+
+      describe('when server responds with cache-control headers', function() {
+        it('caches subsequent cache-able requests with last-modified', function(done) {
+          var resource = new Resource(descriptor);
+          let counter = 0;
+
+          server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+            counter++;
+
+            expect(req.requestHeaders['if-modified-since']).toBeUndefined();
+            if (!req.requestHeaders['if-modified-since']) {
+              req.respond(200, {
+                'Content-Type': 'application/json',
+                'Last-Modified': 'Tue, 09 Aug 2016 14:23:49 GMT',
+                'Cache-Control': 'no-cache'
+              }, JSON.stringify({ counter }));
+              return;
+            }
+            req.respond(304, {}, '');
+          });
+
+          resource.get({ bar: 10 })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(1);
+            return resource.get({ bar: 10 });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(2);
+            return resource.get({ bar: 10 });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(3);
+          })
+          .then(done, done.fail);
+        });
+      });
+
+      describe('when client requests with no-cache', function() {
+        it('caches subsequent cache-able requests with last-modified', function(done) {
+          var resource = new Resource(descriptor);
+          let counter = 0;
+
+          server.respondWith('GET', '/v1/foo?bar=10', function(req) {
+            counter++;
+
+            expect(req.requestHeaders['if-modified-since']).toBeUndefined();
+            if (!req.requestHeaders['if-modified-since']) {
+              req.respond(200, {
+                'Content-Type': 'application/json',
+                'Last-Modified': 'Tue, 09 Aug 2016 14:23:49 GMT'
+              }, JSON.stringify({ counter }));
+              return;
+            }
+            req.respond(304, {}, '');
+          });
+
+          resource.get({ bar: 10 }, { cache: 'no-cache' })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(1);
+            return resource.get({ bar: 10 }, { cache: 'no-cache' });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(2);
+            return resource.get({ bar: 10 }, { cache: 'no-cache' });
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            expect(data.counter).toEqual(3);
+          })
+          .then(done, done.fail);
+        });
+      });
     });
 
     describe('#head', function() {
