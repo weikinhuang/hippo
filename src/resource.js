@@ -75,7 +75,7 @@ export default class Resource {
   _constructRequestOptions(method, params, body, options = {}) {
     const selfConn = this.getConnection({ name: 'self', data: params || {} });
     const requestOptions = merge({}, this._requestOptions, options, { method });
-    requestOptions.headers = new Headers(requestOptions.headers);
+    requestOptions.headers = new Headers(requestOptions.headers || {});
     if (body && !requestOptions.body) {
       requestOptions.body = body;
     }
