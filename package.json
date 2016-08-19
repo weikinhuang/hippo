@@ -47,6 +47,7 @@
     "whatwg-fetch": "^1.0.0"
   },
   "dependencies": {
-    "lodash.merge": "^4.5.1"
+    "lodash.merge": "^4.5.1",
+    "qs": "^6.2.1"
   }
 }

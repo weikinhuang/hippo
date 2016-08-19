@@ -1,8 +1,13 @@
 import UriTemplate from './uritemplate';
 import xhr from './xhr';
 import merge from 'lodash.merge';
+import qs from 'qs';
 
 const NO_CACHE_REGEX = /\b(?:no-cache|no-store)\b/;
+const MIME_TYPE_JSON = 'application/json';
+const MIME_TYPE_WWW_FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
+const MIME_TYPE_FORM_DATA = 'multipart/form-data';
+const QS_FORMAT_OPTIONS = { arrayFormat: 'brackets' };
 
 /**
  * @param {Headers} requestHeaders
@@ -50,16 +55,35 @@ export default class Resource {
   }
 
   getConnection(connectionName) {
+    const connection = this._getConnection(connectionName);
+
+    let data = {};
+    if (typeof connectionName === 'object') {
+      data = connectionName.data || {};
+    }
+
+    return new UriTemplate(connection.href).expand(data).toString();
+  }
+
+  getAccept(connectionName) {
+    let accept = this._getConnection(connectionName).accept;
+    if (!accept) {
+      return [MIME_TYPE_WWW_FORM_URL_ENCODED];
+    }
+    if (!Array.isArray(accept)) {
+      accept = [accept];
+    }
+    return accept;
+  }
+
+  _getConnection(connectionName) {
     if (!connectionName) {
       throw new Error('No shortname given for connection');
     }
 
     let connection;
-    let data = {};
-
     if (typeof connectionName === 'object') {
       connection = this._description[connectionName.name] || null;
-      data = connectionName.data || {};
     }
     else {
       connection = this._description[connectionName];
@@ -69,7 +93,7 @@ export default class Resource {
       throw new Error('Unknown connection: ' + connectionName);
     }
 
-    return new UriTemplate(connection.href).expand(data).toString();
+    return connection;
   }
 
   _constructRequestOptions(method, params, body, options = {}) {
@@ -77,12 +101,34 @@ export default class Resource {
     const requestOptions = merge({}, this._requestOptions, options, { method });
     requestOptions.headers = new Headers(requestOptions.headers || {});
     if (body && !requestOptions.body) {
-      requestOptions.body = body;
+      requestOptions.body = this._processBody(body, requestOptions);
     }
     return {
       url: selfConn,
       requestOptions
     };
+  }
+
+  _processBody(body, requestOtions) {
+    if (typeof body === 'string') {
+      return body;
+    }
+    if (body instanceof FormData) {
+      requestOtions.headers.set('Content-Type', MIME_TYPE_FORM_DATA);
+      return body;
+    }
+
+    const accept = this.getAccept({ name: 'self' });
+
+    if (accept.includes(MIME_TYPE_JSON)) {
+      requestOtions.headers.set('Content-Type', MIME_TYPE_JSON);
+      return JSON.stringify(body);
+    }
+    if (accept.includes(MIME_TYPE_WWW_FORM_URL_ENCODED)) {
+      requestOtions.headers.set('Content-Type', MIME_TYPE_WWW_FORM_URL_ENCODED);
+      return qs.stringify(body, QS_FORMAT_OPTIONS);
+    }
+    throw new Error('Unknown request body encoding.');
   }
 
   get(params, options = {}) {
