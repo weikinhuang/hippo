@@ -109,23 +109,23 @@ export default class Resource {
     };
   }
 
-  _processBody(body, requestOtions) {
+  _processBody(body, requestOptions) {
     if (typeof body === 'string') {
       return body;
     }
     if (body instanceof FormData) {
-      requestOtions.headers.set('Content-Type', MIME_TYPE_FORM_DATA);
+      requestOptions.headers.set('Content-Type', MIME_TYPE_FORM_DATA);
       return body;
     }
 
     const accept = this.getAccept({ name: 'self' });
 
     if (accept.includes(MIME_TYPE_JSON)) {
-      requestOtions.headers.set('Content-Type', MIME_TYPE_JSON);
+      requestOptions.headers.set('Content-Type', MIME_TYPE_JSON);
       return JSON.stringify(body);
     }
     if (accept.includes(MIME_TYPE_WWW_FORM_URL_ENCODED)) {
-      requestOtions.headers.set('Content-Type', MIME_TYPE_WWW_FORM_URL_ENCODED);
+      requestOptions.headers.set('Content-Type', MIME_TYPE_WWW_FORM_URL_ENCODED);
       return qs.stringify(body, QS_FORMAT_OPTIONS);
     }
     throw new Error('Unknown request body encoding.');
@@ -158,6 +158,10 @@ export default class Resource {
 
   _issueRequest(method, params, body, options = {}) {
     const { url, requestOptions } = this._constructRequestOptions(method, params, body, options);
+    return this._makeRequest(url, requestOptions);
+  }
+
+  _makeRequest(url, requestOptions) {
     return xhr(url, requestOptions);
   }
 

@@ -5,7 +5,7 @@ describe('Resource', function() {
     expect(new Resource({ _links: {} }) instanceof Resource).toBeTruthy();
   });
 
-  describe('constructor', function() {
+  describe('constructor fn', function() {
     describe('when not given a descriptor', function() {
       it('throws an error', function() {
         expect(function() {
@@ -982,6 +982,151 @@ describe('Resource', function() {
       resource.get({}, { headers: { foo: 'baz' } })
       .then(function() { return resourceB.get(); })
       .then(done, done.fail);
+    });
+  });
+
+  describe('descriptor body encoding defaults', function() {
+    describe('no defaults', function() {
+      beforeEach(function() {
+        this.resource = new Resource({
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}'
+            }
+          }
+        });
+
+        spyOn(this.resource, '_makeRequest').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200, statusText: 'Ok', ok: true })));
+      });
+
+      it('leaves body untouched when body is a string', function(done) {
+        this.resource.post('foobar')
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('foobar');
+          expect(requestOptions.headers.get('content-type')).toBeNull();
+        })
+        .then(done, done.fail);
+      });
+
+      it('leaves body untouched when body is a FormData instance', function(done) {
+        const form = new FormData();
+        form.append('foo', 'bar');
+
+        this.resource.post(form)
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual(form);
+          expect(requestOptions.headers.get('content-type')).toEqual('multipart/form-data');
+        })
+        .then(done, done.fail);
+      });
+
+      it('defaults to application/x-www-form-urlencoded when an object is passed', function(done) {
+        this.resource.post({ foo: 'bar' })
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('foo=bar');
+          expect(requestOptions.headers.get('content-type')).toEqual('application/x-www-form-urlencoded');
+        })
+        .then(done, done.fail);
+      });
+    });
+
+    describe('application/x-www-form-urlencoded accepts', function() {
+      beforeEach(function() {
+        this.resource = new Resource({
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}',
+              accept: ['application/x-www-form-urlencoded']
+            }
+          }
+        });
+
+        spyOn(this.resource, '_makeRequest').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200, statusText: 'Ok', ok: true })));
+      });
+
+      it('leaves body untouched when body is a string', function(done) {
+        this.resource.post('foobar')
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('foobar');
+          expect(requestOptions.headers.get('content-type')).toBeNull();
+        })
+        .then(done, done.fail);
+      });
+
+      it('leaves body untouched when body is a FormData instance', function(done) {
+        const form = new FormData();
+        form.append('foo', 'bar');
+
+        this.resource.post(form)
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual(form);
+          expect(requestOptions.headers.get('content-type')).toEqual('multipart/form-data');
+        })
+        .then(done, done.fail);
+      });
+
+      it('defaults to application/x-www-form-urlencoded when an object is passed', function(done) {
+        this.resource.post({ foo: [1, 2] })
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('foo%5B%5D=1&foo%5B%5D=2');
+          expect(requestOptions.headers.get('content-type')).toEqual('application/x-www-form-urlencoded');
+        })
+        .then(done, done.fail);
+      });
+    });
+
+    describe('application/json accepts', function() {
+      beforeEach(function() {
+        this.resource = new Resource({
+          _links: {
+            self: {
+              href: '/v1/foo{?baz}',
+              accept: ['application/json']
+            }
+          }
+        });
+
+        spyOn(this.resource, '_makeRequest').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200, statusText: 'Ok', ok: true })));
+      });
+
+      it('leaves body untouched when body is a string', function(done) {
+        this.resource.post('foobar')
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('foobar');
+          expect(requestOptions.headers.get('content-type')).toBeNull();
+        })
+        .then(done, done.fail);
+      });
+
+      it('leaves body untouched when body is a FormData instance', function(done) {
+        const form = new FormData();
+        form.append('foo', 'bar');
+
+        this.resource.post(form)
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual(form);
+          expect(requestOptions.headers.get('content-type')).toEqual('multipart/form-data');
+        })
+        .then(done, done.fail);
+      });
+
+      it('defaults to application/x-www-form-urlencoded when an object is passed', function(done) {
+        this.resource.post({ foo: 'bar' })
+        .then(() => {
+          const requestOptions = this.resource._makeRequest.calls.mostRecent().args[1];
+          expect(requestOptions.body).toEqual('{"foo":"bar"}');
+          expect(requestOptions.headers.get('content-type')).toEqual('application/json');
+        })
+        .then(done, done.fail);
+      });
     });
   });
 });
