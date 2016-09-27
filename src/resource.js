@@ -134,9 +134,17 @@ export default class Resource {
   get(params, options = {}) {
     const { url, requestOptions } = this._constructRequestOptions('get', params, null, options);
     // set cache headers
-    if (!NO_CACHE_REGEX.test(requestOptions.cache || '') && this._requestCache.has(url)) {
+    if (!requestOptions.skipCacheHeaders && this._requestCache.has(url)) {
       muxCacheHeaders(requestOptions.headers, this._requestCache.get(url).headers);
     }
+    try {
+      // remove non-native request option from fetch options
+      delete requestOptions.skipCacheHeaders;
+    }
+    catch (e) {
+      // empty
+    }
+
     return xhr(url, requestOptions)
     .then((res) => {
       if (res.status === 304 && this._requestCache.has(url)) {

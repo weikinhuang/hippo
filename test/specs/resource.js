@@ -350,16 +350,16 @@ describe('Resource', function() {
             req.respond(304, {}, '');
           });
 
-          resource.get({ bar: 10 }, { cache: 'no-cache' })
+          resource.get({ bar: 10 }, { skipCacheHeaders: true })
           .then((res) => res.json())
           .then((data) => {
             expect(data.counter).toEqual(1);
-            return resource.get({ bar: 10 }, { cache: 'no-cache' });
+            return resource.get({ bar: 10 }, { skipCacheHeaders: true });
           })
           .then((res) => res.json())
           .then((data) => {
             expect(data.counter).toEqual(2);
-            return resource.get({ bar: 10 }, { cache: 'no-cache' });
+            return resource.get({ bar: 10 }, { skipCacheHeaders: true });
           })
           .then((res) => res.json())
           .then((data) => {
