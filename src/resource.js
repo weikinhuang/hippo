@@ -9,6 +9,8 @@ const MIME_TYPE_WWW_FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
 const MIME_TYPE_FORM_DATA = 'multipart/form-data';
 const QS_FORMAT_OPTIONS = { arrayFormat: 'brackets' };
 
+export const MEMORY_CACHE_HEADER = 'X-Hippo-Cache';
+
 /**
  * @param {Headers} requestHeaders
  * @param {Headers} responseHeaders
@@ -31,7 +33,7 @@ function isCacheable(response) {
   if (!response.ok) {
     return false;
   }
-  if (response.headers.has('Cache-Control') && NO_CACHE_REGEX.test(response.headers.get('Cache-Control'))) {
+  if (response.headers.has(MEMORY_CACHE_HEADER) && NO_CACHE_REGEX.test(response.headers.get(MEMORY_CACHE_HEADER))) {
     return false;
   }
   return response.headers.has('Last-Modified') || response.headers.has('Etag');
