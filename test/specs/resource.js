@@ -1,4 +1,4 @@
-import Resource from 'src/resource';
+import Resource, { MEMORY_CACHE_HEADER } from 'src/resource';
 
 describe('Resource', function() {
   it('is a constructor', function() {
@@ -305,7 +305,7 @@ describe('Resource', function() {
               req.respond(200, {
                 'Content-Type': 'application/json',
                 'Last-Modified': 'Tue, 09 Aug 2016 14:23:49 GMT',
-                'Cache-Control': 'no-cache'
+                [MEMORY_CACHE_HEADER]: 'no-cache'
               }, JSON.stringify({ counter }));
               return;
             }
