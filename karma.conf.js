@@ -7,17 +7,6 @@
 var webpackConfig = require('./webpack.config.js');
 webpackConfig.devtool = 'eval';
 
-// Only run coverage report during `npm test`
-if (process.env.npm_lifecycle_event === 'test') {
-  webpackConfig.module.postLoaders = webpackConfig.module.postLoaders || [];
-  webpackConfig.module.postLoaders.push({
-    test: /\.js$/,
-    exclude: /(test|node_modules)\//,
-    loader: 'istanbul-instrumenter'
-  });
-}
-
-
 module.exports = function(config) {
   config.set({
     basePath: '',
@@ -27,6 +16,8 @@ module.exports = function(config) {
     files: [
       'node_modules/babel-polyfill/dist/polyfill.js',
       require.resolve('whatwg-fetch'),
+      require.resolve('jasmine-stray-timers'),
+      require.resolve('jasmine-stray-promises'),
       'test/index.js'
     ],
 

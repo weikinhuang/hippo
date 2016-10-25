@@ -73,10 +73,10 @@ describe('Client', function() {
           server.respondWith('OPTIONS', '/v1/foo', function(req) {
             expect(req.requestHeaders.foo).toEqual('hello');
             req.respond.apply(req, response);
-            done();
           });
 
-          client.walk();
+          client.walk()
+          .then(done);
         });
 
         it('passes request options to created resources', function(done) {
