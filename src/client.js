@@ -35,7 +35,6 @@ export default class Client {
     .then((head) => this._doWalk(shortNames, head));
   }
 
-
   clearDescriptorCache() {
     delete this._descriptorCache;
   }

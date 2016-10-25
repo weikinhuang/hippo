@@ -164,10 +164,10 @@ describe('Resource', function() {
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { 'Content-Type': 'text/plain' }, '');
-            done();
           });
 
-          resource.get({ bar: 10 });
+          resource.get({ bar: 10 })
+          .then(done, done.fail);
         });
       });
 
@@ -178,10 +178,10 @@ describe('Resource', function() {
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('bar');
             req.respond(200, { 'Content-Type': 'text/plain' }, '');
-            done();
           });
 
-          resource.get({ bar: 10 }, { headers: { foo: 'bar' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'bar' } })
+          .then(done, done.fail);
         });
       });
 
@@ -192,10 +192,10 @@ describe('Resource', function() {
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { 'Content-Type': 'text/plain' }, '');
-            done();
           });
 
-          resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'baz' } })
+          .then(done, done.fail);
         });
       });
 
@@ -207,10 +207,10 @@ describe('Resource', function() {
             expect(req.requestHeaders.foo).toEqual('bar');
             expect(req.requestHeaders.other).toEqual('str');
             req.respond(200, { 'Content-Type': 'text/plain' }, '');
-            done();
           });
 
-          resource.get({ bar: 10 }, { headers: { other: 'str' } });
+          resource.get({ bar: 10 }, { headers: { other: 'str' } })
+          .then(done, done.fail);
         });
 
         it('overwrites those options to the ajax request method', function(done) {
@@ -219,10 +219,10 @@ describe('Resource', function() {
           server.respondWith('GET', '/v1/foo?bar=10', function(req) {
             expect(req.requestHeaders.foo).toEqual('baz');
             req.respond(200, { 'Content-Type': 'text/plain' }, '');
-            done();
           });
 
-          resource.get({ bar: 10 }, { headers: { foo: 'baz' } });
+          resource.get({ bar: 10 }, { headers: { foo: 'baz' } })
+          .then(done, done.fail);
         });
       });
 

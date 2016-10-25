@@ -1,7 +1,4 @@
-// import chaiAsPromised from 'chai-as-promised';
 import xhr from 'src/xhr';
-
-// chai.use(chaiAsPromised);
 
 describe('xhr', function() {
   var server;
@@ -18,8 +15,10 @@ describe('xhr', function() {
       server = null;
     });
 
-    it('returns a promise', function() {
-      expect(xhr('/')).toEqual(jasmine.any(Promise));
+    it('returns a promise', function(done) {
+      const res = xhr('/');
+      expect(res).toEqual(jasmine.any(Promise));
+      res.then(done, done);
     });
 
     it('returns a resolved promise on XHR success', function(done) {
