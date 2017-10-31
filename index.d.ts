@@ -16,7 +16,7 @@ declare module 'be-hippo' {
     data?: KeyValuePair,
   };
 
-  export type HippoRequestOptions = RequestInit & KeyValuePair;
+  export type HippoRequestOptions = RequestInit | KeyValuePair;
 
   type ClientOptions = {
     walkOptions: HippoRequestOptions,
@@ -62,5 +62,5 @@ declare module 'be-hippo' {
     clearDescriptorCache(): void;
   }
 
-  export default { Client };
+  export default Client;
 }
