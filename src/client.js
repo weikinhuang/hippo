@@ -24,10 +24,16 @@ export default class Client {
       throw new Error('Client must be initialized with an API Root');
     }
 
-    this._apiRoot = apiRoot;
     this._options = options;
-    this._traversals = {};
-    this._nodes = {};
+
+    if (typeof apiRoot === 'object') {
+      this._backfillTraversals(apiRoot);
+    }
+    else {
+      this._apiRoot = apiRoot;
+      this._traversals = {};
+      this._nodes = {};
+    }
   }
 
   walk(...shortNames) {
@@ -60,11 +66,15 @@ export default class Client {
   }
 
   _getRootDescriptor() {
+    if (this._nodes[this._apiRoot]) {
+      return Promise.resolve(this._nodes[this._apiRoot]);
+    }
+
     return this._getDescriptor(this._apiRoot)
     .catch(() => {
       throw new Error('API does not conform to expected hypermedia format');
     });
-  };
+  }
 
   _getDescriptor(uri) {
     if (!this._descriptorCache) {
@@ -88,5 +98,33 @@ export default class Client {
     });
 
     return this._descriptorCache[uri];
+  }
+
+  _backfillTraversals(shortnameMap) {
+    this._apiRoot = shortnameMap.self;
+    this._traversals = {};
+    this._nodes = {};
+
+    Object.entries(shortnameMap)
+      .forEach(([shortname, uri]) => {
+        let traversalUri;
+        let descriptor;
+
+        if (typeof uri === 'string') {
+          traversalUri = uri;
+          descriptor = {
+            self: {
+              href: uri,
+            },
+          };
+        }
+        else {
+          traversalUri = uri.self.href;
+          descriptor = uri;
+        }
+
+        this._traversals[shortname] = traversalUri;
+        this._nodes[traversalUri] = new Resource({ _links: descriptor }, this._options.requestOptions);
+      });
   }
 }

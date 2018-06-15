@@ -336,5 +336,101 @@ describe('Client', function() {
         .then(done, done.fail);
       });
     });
+
+    describe('when called on a client preloaded with traversals', function() {
+      beforeEach(function() {
+        this.client = new Client({
+          self: '/v1/api',
+          foo: '/v1/foo',
+          objResource: {
+            self: {
+              href: '/v1/obj{/id}',
+              accept: 'application/json',
+            },
+          },
+          objWithSubResource: {
+            self: {
+              href: '/v1/objwithsub{/id}',
+              subresource: '/v1/sub',
+            },
+          },
+          templated: '/v1/foo{?id,name}',
+        });
+      });
+
+      describe('when given a shortname', function() {
+        it('does not make a request to get the descriptor data', function() {
+          spyOn(this.client, '_getDescriptor');
+
+          return this.client.walk('foo')
+            .then(() => {
+              expect(this.client._getDescriptor).not.toHaveBeenCalled();
+            });
+        });
+
+        it('returns a resolved promise', function(done) {
+          this.client.walk('foo')
+            .then((resource) => {
+              expect(resource).toEqual(new Resource({
+                _links: {
+                  self: {
+                    href: '/v1/foo',
+                  },
+                },
+              }));
+            })
+            .then(done, done.fail);
+        });
+      });
+
+      describe('when given a shortname that was initialized with an object', function() {
+        it('does not make a request to get the descriptor data', function() {
+          spyOn(this.client, '_getDescriptor');
+
+          return this.client.walk('objResource')
+            .then(() => {
+              expect(this.client._getDescriptor).not.toHaveBeenCalled();
+            });
+        });
+
+        it('returns a resolved promise', function() {
+          return this.client.walk('objResource')
+            .then((resource) => {
+              expect(resource).toEqual(new Resource({
+                _links: {
+                  self: {
+                    href: '/v1/obj{/id}',
+                    accept: 'application/json',
+                  },
+                },
+              }));
+            });
+        });
+      });
+
+      describe('when given a shortname object', function() {
+        it('resolves with the resource specified by the shortname', function() {
+          return this.client.walk({ name: 'templated', data: { var: 5 } })
+          .then((resource) => {
+            expect(resource).toEqual(new Resource({
+              _links: {
+                self: {
+                  href: '/v1/foo{?id,name}',
+                },
+              },
+            }));
+          });
+        });
+      });
+
+      describe('when given a shortname that is not present in the initial traversals', function() {
+        it('returns a promise that rejects', function() {
+          return this.client.walk('fakepath')
+          .catch((e) => {
+            expect(e.message).toMatch(/Unknown connection/);
+          });
+        });
+      });
+    });
   });
 });

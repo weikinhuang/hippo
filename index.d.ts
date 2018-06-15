@@ -51,7 +51,7 @@ declare module 'be-hippo' {
   }
 
   export class Client {
-    constructor(apiRoot: string, options?: ClientOptions);
+    constructor(apiRoot: KeyValuePair | string, options?: ClientOptions);
 
     walk(...shortNames: Connection[]): Promise<Resource>;
 
